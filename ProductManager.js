@@ -9,8 +9,7 @@ class ProductManager {
     constructor(path) { this.products = [];
       this.path = path}
     
-      
-
+  
       getdb(){
         const listproducts = fs.readFileSync(this.path, "utf-8");
         this.products = JSON.parse(listproducts)
@@ -30,7 +29,7 @@ class ProductManager {
       }
     }
 
-    
+
 
     getProductById(id){
 
@@ -72,8 +71,8 @@ class ProductManager {
 
     if (coderepetido == false) {
 
-  /*       /* ID Incremental
-        ProductManager.id = ProductManager.id + 1; */
+  /* ID Incremental */
+
         const id = this.generateID()
         /* Agrega Producto */
         this.products.push({id,title,description,price,thumbnail,stock,code});
@@ -116,18 +115,31 @@ class ProductManager {
     const ProductManagerA = new ProductManager(path.join(__dirname, "ProductManagerA.json"));
 
     /*Listar Productos sin crear*/
-console.log(`lista de Productos: `);
+/* console.log(`lista de Productos: `);
 ProductManagerA.getProducts();
-console.log(".....");
+console.log("....."); */
     
 console.log("Agregando Productos instantancia ProductManagerA");
-ProductManagerA.addProduct("ProductManagerA1","descripcion producto1",10,"Sin Imagen",10,1234)
-ProductManagerA.addProduct("ProductManagerA2","descripcion producto1",10,"Sin Imagen",10,1235)
+ProductManagerA.addProduct("ProductManagerA1","descripcion producto1",10,"Sin Imagen",100,1000)
+ProductManagerA.addProduct("ProductManagerA2","descripcion producto2",20,"Sin Imagen",90,2001)
+ProductManagerA.addProduct("ProductManagerA3","descripcion producto3",30,"Sin Imagen",80,3002)
+ProductManagerA.addProduct("ProductManagerA4","descripcion producto4",40,"Sin Imagen",70,4003)
+ProductManagerA.addProduct("ProductManagerA5","descripcion producto5",50,"Sin Imagen",60,5004)
+ProductManagerA.addProduct("ProductManagerA6","descripcion producto6",60,"Sin Imagen",50,6005)
+ProductManagerA.addProduct("ProductManagerA7","descripcion producto7",70,"Sin Imagen",40,7006)
+ProductManagerA.addProduct("ProductManagerA8","descripcion producto8",80,"Sin Imagen",30,8007)
+ProductManagerA.addProduct("ProductManagerA9","descripcion producto9",90,"Sin Imagen",20,9008)
+ProductManagerA.addProduct("ProductManagerA10","descripcion producto10",100,"Sin Imagen",10,100009)
+ProductManagerA.addProduct("ProductManagerA11","descripcion producto11",101,"Sin Imagen",9,110010)
+
+
+
+
 
 /*Listar Productos creados*/
         
-console.log(`lista de Productos instancia ProductManagerA: `);
-ProductManagerA.getProducts();
+/* console.log(`lista de Productos instancia ProductManagerA: `);
+ProductManagerA.getProducts(); */
 
 /* const ProductManagerB = new ProductManager(path.join(__dirname, "ProductManagerB.json"));
 
@@ -138,9 +150,9 @@ ProductManagerB.addProduct("ProductManagerB1","descripcion producto2",200,"Sin I
 ProductManagerB.addProduct("ProductManagerB2","descripcion producto2",200,"Sin Imagen",20,5321) */
         
 /*Variable para buscar productos*/
-const productobuscado1=2;
+/* const productobuscado1=2;
 console.log(`informacion Producto id ${productobuscado1}: en instancia ProductManagerA`);
-ProductManagerA.getProductById(productobuscado1);
+ProductManagerA.getProductById(productobuscado1); */
 
 
         
@@ -153,19 +165,19 @@ ProductManagerB.updateProduct(productobuscado2, updatecampo2, updateprice2); */
         
 
 /*Variable para Update productos*/
-const productobuscado3=3;
+/* const productobuscado3=3;
 const updatecampo3="stock";
 const updateprice3=321;
 console.log(`update db en precio ${updateprice3} al producto con ID ${productobuscado3}: en instancia ProductManagerA`);
-ProductManagerA.updateProduct(productobuscado3, updatecampo3, updateprice3);
+ProductManagerA.updateProduct(productobuscado3, updatecampo3, updateprice3); */
 
 
 /*Variable para Eliminar productos*/
-const productobuscado4=2;
+/* const productobuscado4=2;
 console.log(`Eliminar el producto con ID ${productobuscado4}: en instancia ProductManagerA, Objeto eliminado:`);
 ProductManagerA.deleteProduct(productobuscado4);
 console.log(`lista de ProductosA: `);
-ProductManagerA.getProducts();
+ProductManagerA.getProducts(); */
 
 
-        
+module.exports = ProductManager;
