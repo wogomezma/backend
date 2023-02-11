@@ -25,10 +25,8 @@ class ProductManager {
     getProducts() {
       try {
         this.getdb()
-        this.updatedb()  
-        return console.log(this.products);
+         return console.log(this.products);
       } catch (error) {
-        this.updatedb()  
       }
     }
 
@@ -45,7 +43,6 @@ class ProductManager {
       
       const idbuscado = findElement(this.products, id)
 
-      this.updatedb()
 
       return console.log(idbuscado);
 
@@ -93,8 +90,9 @@ class ProductManager {
       updateProduct(id, updatecampo, updateprice){
         this.getdb()
         const updateProducts = this.products
-        const indiceencontrado = updateProducts.find(element => element.id === id)
-        updateProducts[indiceencontrado.id-1] ={...updateProducts[indiceencontrado.id-1], [updatecampo]: updateprice};
+        const indiceencontrado = updateProducts.map(item => item.id).indexOf(id);
+        console.log("indiceecontradoupdate", indiceencontrado);
+        updateProducts[indiceencontrado] ={...updateProducts[indiceencontrado], [updatecampo]: updateprice};
         this.products = updateProducts
         this.updatedb()
         this.getProductById(id)
@@ -103,8 +101,8 @@ class ProductManager {
       deleteProduct (id){
         this.getdb()
         const deleteProduct = this.products
-        const indiceencontrado = deleteProduct.find(element => element.id === id)
-        var objdel = deleteProduct.splice(indiceencontrado.id-1,1)
+        const indiceencontrado = deleteProduct.map(item => item.id).indexOf(id);
+        var objdel = deleteProduct.splice(indiceencontrado,1)
         this.products = deleteProduct
         this.updatedb()
         console.log(objdel);
@@ -116,7 +114,6 @@ class ProductManager {
 
     /**Creacion Instancias */
     const ProductManagerA = new ProductManager(path.join(__dirname, "ProductManagerA.json"));
-    const ProductManagerB = new ProductManager(path.join(__dirname, "ProductManagerB.json"));
 
     /*Listar Productos sin crear*/
 console.log(`lista de Productos: `);
@@ -132,11 +129,13 @@ ProductManagerA.addProduct("ProductManagerA2","descripcion producto1",10,"Sin Im
 console.log(`lista de Productos instancia ProductManagerA: `);
 ProductManagerA.getProducts();
 
+/* const ProductManagerB = new ProductManager(path.join(__dirname, "ProductManagerB.json"));
+
 console.log("Agregando Productos instantancia ProductManagerB");
 
 ProductManagerB.addProduct("ProductManagerB1","descripcion producto2",200,"Sin Imagen",20,4321)
 ProductManagerB.addProduct("ProductManagerB1","descripcion producto2",200,"Sin Imagen",20,4325)
-ProductManagerB.addProduct("ProductManagerB2","descripcion producto2",200,"Sin Imagen",20,5321)
+ProductManagerB.addProduct("ProductManagerB2","descripcion producto2",200,"Sin Imagen",20,5321) */
         
 /*Variable para buscar productos*/
 const productobuscado1=2;
@@ -146,28 +145,27 @@ ProductManagerA.getProductById(productobuscado1);
 
         
 /*Variable para Update productos*/
-const productobuscado2=2;
+/* const productobuscado2=2;
 const updatecampo2="price";
 const updateprice2=2200;
 console.log(`update db en precio ${updateprice2} al producto con ID ${productobuscado2}: en instancia ProductManagerB`);
-ProductManagerB.updateProduct(productobuscado2, updatecampo2, updateprice2);
+ProductManagerB.updateProduct(productobuscado2, updatecampo2, updateprice2); */
         
 
 /*Variable para Update productos*/
-const productobuscado3=2;
+const productobuscado3=3;
 const updatecampo3="stock";
-const updateprice3=500;
+const updateprice3=321;
 console.log(`update db en precio ${updateprice3} al producto con ID ${productobuscado3}: en instancia ProductManagerA`);
 ProductManagerA.updateProduct(productobuscado3, updatecampo3, updateprice3);
 
 
 /*Variable para Eliminar productos*/
-const productobuscado4=1;
+const productobuscado4=2;
 console.log(`Eliminar el producto con ID ${productobuscado4}: en instancia ProductManagerA, Objeto eliminado:`);
 ProductManagerA.deleteProduct(productobuscado4);
 console.log(`lista de ProductosA: `);
 ProductManagerA.getProducts();
-
 
 
         
