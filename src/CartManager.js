@@ -2,7 +2,7 @@
 const fs = require("fs");
 const path = require("path");
 
-class ProductManager {
+class CartManager {
 
     static id = 0;
 
@@ -13,11 +13,14 @@ class ProductManager {
       getdb(){
         const listproducts = fs.readFileSync(this.path, "utf-8");
         this.products = JSON.parse(listproducts)
+        console.log("Get Base de Datos");
       }
   
   
       updatedb(){
+        console.log("Base de datos actualizada");
         return fs.writeFileSync(this.path, JSON.stringify(this.products));
+        
       }
 
 
@@ -58,12 +61,11 @@ class ProductManager {
       }
     }
 
-    addProduct(title,description,price,thumbnail,stock,code) {
+    addProduct(id,title,description,price,thumbnail,stock,code) {
 
       this.getdb()
 
-         /* Funcion para buscar code repetido*/
-    const findElement = (array, searchedCode) => {
+/*     const findElement = (array, searchedCode) => {
         return array.find(element => element.code === searchedCode) ?? false;
       }
       
@@ -71,27 +73,67 @@ class ProductManager {
 
     if (coderepetido == false) {
 
-  /* ID Incremental */
 
-        const id = this.generateID()
+
+        const id = this.generateID() */
+
         /* Agrega Producto */
         this.products.push({id,title,description,price,thumbnail,stock,code});
         this.updatedb()
 
 
-      } else {
+     /*  } else {
         console.log("Code repetido, favor cambiarlo");
  
       }
-
+ */
       }
 
-      updateProduct(id, updatecampo, updateprice){
+      addProduct2(id) {
+
+        this.getdb()
+  
+       const findElement = (array, searchedid) => {
+          return array.find(element => element.id === searchedid) ?? false;
+        }
+        
+        const idrepetido = findElement(this.products, id)
+  
+      if (idrepetido == false) {
+  
+  
+        const quantity = 1
+            
+          /* Agrega Producto */
+          this.products.push({id,quantity});
+          this.updatedb()
+  
+  
+        } else {
+          const indiceencontrado = this.products.map(item => item.id).indexOf(id);
+          console.log("Id ya esta, incrementando quantity",indiceencontrado);
+          const products = this.products.find((u) => {
+            return u.id === Number(id);
+          });
+          console.log("Id ya esta, incrementando quantity",products.quantity);
+          const quantity = products.quantity+1;
+          this.products[indiceencontrado] ={...this.products[indiceencontrado], quantity: quantity};
+          this.products.push({id,quantity});
+          this.updatedb()
+        }
+  
+        console.log("Producto agregado",this.products);
+
+        }
+
+      updateProduct(id, campos){
         this.getdb()
         const updateProducts = this.products
         const indiceencontrado = updateProducts.map(item => item.id).indexOf(id);
         console.log("indiceecontradoupdate", indiceencontrado);
-        updateProducts[indiceencontrado] ={...updateProducts[indiceencontrado], [updatecampo]: updateprice};
+    /*     updateProducts[indiceencontrado] ={...updateProducts[indiceencontrado], [updatecampo]: updateprice}; */
+        updateProducts[indiceencontrado] ={...updateProducts[indiceencontrado], price: campos.price, title: campos.title, description: campos.description, thumbnail: campos.thumbnail, stock: campos.stock, code:campos.code};
+
         this.products = updateProducts
         this.updatedb()
         this.getProductById(id)
@@ -101,6 +143,7 @@ class ProductManager {
         this.getdb()
         const deleteProduct = this.products
         const indiceencontrado = deleteProduct.map(item => item.id).indexOf(id);
+        console.log("Archivo a Eliminar", indiceencontrado);
         var objdel = deleteProduct.splice(indiceencontrado,1)
         this.products = deleteProduct
         this.updatedb()
@@ -112,14 +155,14 @@ class ProductManager {
     }
 
     /**Creacion Instancias */
-    const ProductManagerA = new ProductManager(path.join(__dirname, "ProductManagerA.json"));
+     const CartManagerA = new CartManager(path.join(__dirname, "CartManagerA.json"));
 
     /*Listar Productos sin crear*/
 /* console.log(`lista de Productos: `);
 ProductManagerA.getProducts();
 console.log("....."); */
     
-console.log("Agregando Productos instantancia ProductManagerA");
+/* console.log("Agregando Productos instantancia ProductManagerA");
 ProductManagerA.addProduct("ProductManagerA1","descripcion producto1",10,"Sin Imagen",100,1000)
 ProductManagerA.addProduct("ProductManagerA2","descripcion producto2",20,"Sin Imagen",90,2001)
 ProductManagerA.addProduct("ProductManagerA3","descripcion producto3",30,"Sin Imagen",80,3002)
@@ -130,7 +173,7 @@ ProductManagerA.addProduct("ProductManagerA7","descripcion producto7",70,"Sin Im
 ProductManagerA.addProduct("ProductManagerA8","descripcion producto8",80,"Sin Imagen",30,8007)
 ProductManagerA.addProduct("ProductManagerA9","descripcion producto9",90,"Sin Imagen",20,9008)
 ProductManagerA.addProduct("ProductManagerA10","descripcion producto10",100,"Sin Imagen",10,100009)
-ProductManagerA.addProduct("ProductManagerA11","descripcion producto11",101,"Sin Imagen",9,110010)
+*/
 
 
 
@@ -180,4 +223,4 @@ console.log(`lista de ProductosA: `);
 ProductManagerA.getProducts(); */
 
 
-module.exports = ProductManager;
+module.exports = CartManagerA;
