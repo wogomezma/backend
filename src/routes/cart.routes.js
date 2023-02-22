@@ -60,16 +60,14 @@ router.get(`/`, (req, res) => {
 
 
 router.post(`/`, (req, res) => {
-  const productBody = req.body;
   const id = CartManagerA.generateID()
-  console.log("productBody:", productBody);
   console.log("Id generado: ",id);
   /* const lastId = listproducts[listproducts.length - 1].id; */
   /* const newproduct = { id: lastId + 1, ...productBody }; */
-  res.json({ ok: true, message: `carrito creado`, producto: productBody });
+  res.json({ ok: true, message: `carrito creado` });
   /* CartManagerA.addProduct(productBody); */
-  carts.push(id,productBody);
-  CartManagerA.addProduct(id, productBody)
+  carts.push(id);
+  CartManagerA.addProduct(id)
   console.log("Carrito:", carts);
 });
 
@@ -79,17 +77,16 @@ router.post(`/:cid/product/:pid`, (req, res) => {
   const cid = req.params.cid;
   const pid = req.params.pid;
  
-  const newaddproducts = listproducts2.find((u) => {
+  //Busca producto por ID
+  const newaddproducts = listproducts0.find((u) => {
     return u.id === Number(pid);
   });
 
 console.log("producto a agregar es:",newaddproducts);
 
-  carts.push(Number(cid),newaddproducts.id)
+CartManagerA.addProduct2(Number(cid), Number(newaddproducts.id))
 
-  console.log("Carrito despues de agregar producto", carts);
-
-  CartManagerA.addProduct2(Number(cid), newaddproducts.id)
+console.log("agregando producto:",newaddproducts, "a carrito id", cid);
 
 });
 

@@ -4,7 +4,7 @@ const path = require("path");
 
 class CartManager {
 
-    static id = 0;
+    static cid = 0;
 
     constructor(path) { this.products = [];
       this.path = path}
@@ -34,19 +34,19 @@ class CartManager {
 
 
 
-    getProductById(id){
+    getProductById(cid){
 
       this.getdb()
   
              /* Funcion para buscar ID*/
-    const findElement = (array, searchedID) => {
-        return array.find(element => element.id === searchedID) ?? "error no encuentra el producto";
+    const findElement = (array, searchedCID) => {
+        return array.find(element => element.cid === searchedCID) ?? "error no encuentra el producto";
       }
       
-      const idbuscado = findElement(this.products, id)
+      const cidbuscado = findElement(this.products, cid)
 
 
-      return console.log(idbuscado);
+      return console.log(cidbuscado);
 
     }
 
@@ -61,7 +61,7 @@ class CartManager {
       }
     }
 
-    addProduct(id,title,description,price,thumbnail,stock,code) {
+    addProduct(id) {
 
       this.getdb()
 
@@ -78,7 +78,7 @@ class CartManager {
         const id = this.generateID() */
 
         /* Agrega Producto */
-        this.products.push({id,title,description,price,thumbnail,stock,code});
+        this.products.push({id: id, products: {}});
         this.updatedb()
 
 
@@ -89,138 +89,80 @@ class CartManager {
  */
       }
 
-      addProduct2(id) {
+      addProduct2(cid,pid) {
 
         this.getdb()
-  
-       const findElement = (array, searchedid) => {
-          return array.find(element => element.id === searchedid) ?? false;
+
+        const updateProduct = this.products
+                  
+       const cartproducts = updateProduct.find((u) => {
+          return u.id === Number(cid);
+        });
+
+        const cartproducts2 = cartproducts.products
+
+        console.log("productos encontrados en carrito", cartproducts2);
+        
+/*         const findElement1 = (array, searchedID) => {
+          return array.find(element => element.id === searchedID) ?? "error no encuentra el producto";
         }
         
-        const idrepetido = findElement(this.products, id)
-  
-      if (idrepetido == false) {
-  
-  
-        const quantity = 1
+        const idrepetido = findElement1(cartproducts2, pid) */
+        
+       const idrepetido = false
+
+        if (idrepetido == false) {
+
+               
+         const cartproducts2 = cartproducts.products
+   
+        console.log("cartproducts2", cartproducts2);
+
+          console.log("Producto ", pid, "no repetido");
+
+        cartproducts2.push({id: pid, quantity: 1});
+
+           
+          console.log("nuevo carrito id ",cid," carrito ", cartproducts2);
+    
+           const indiceencontrado = updateProduct.map(item => item.id).indexOf(cid);
+          updateProduct[indiceencontrado] ={...updateProduct[indiceencontrado], id: cid, products: cartproducts2};
             
-          /* Agrega Producto */
-          this.products.push({id,quantity});
-          this.updatedb()
-  
-  
-        } else {
-          const indiceencontrado = this.products.map(item => item.id).indexOf(id);
-          console.log("Id ya esta, incrementando quantity",indiceencontrado);
-          const products = this.products.find((u) => {
-            return u.id === Number(id);
-          });
-          console.log("Id ya esta, incrementando quantity",products.quantity);
-          const quantity = products.quantity+1;
-          this.products[indiceencontrado] ={...this.products[indiceencontrado], quantity: quantity};
-          this.products.push({id,quantity});
-          this.updatedb()
-        }
-  
-        console.log("Producto agregado",this.products);
-
-        }
-
-      updateProduct(id, campos){
-        this.getdb()
-        const updateProducts = this.products
-        const indiceencontrado = updateProducts.map(item => item.id).indexOf(id);
-        console.log("indiceecontradoupdate", indiceencontrado);
-    /*     updateProducts[indiceencontrado] ={...updateProducts[indiceencontrado], [updatecampo]: updateprice}; */
-        updateProducts[indiceencontrado] ={...updateProducts[indiceencontrado], price: campos.price, title: campos.title, description: campos.description, thumbnail: campos.thumbnail, stock: campos.stock, code:campos.code};
-
-        this.products = updateProducts
-        this.updatedb()
-        this.getProductById(id)
-      }
-
-      deleteProduct (id){
-        this.getdb()
-        const deleteProduct = this.products
-        const indiceencontrado = deleteProduct.map(item => item.id).indexOf(id);
-        console.log("Archivo a Eliminar", indiceencontrado);
-        var objdel = deleteProduct.splice(indiceencontrado,1)
-        this.products = deleteProduct
-        this.updatedb()
-        console.log(objdel);
-      }
+            this.products = updateProduct
+            this.updatedb() 
 
 
+    
+          } else {
+
+            console.log("Producto ", pid, "repetido");
+
+            const product = cartproducts2.find((u) => {
+              return u.id === Number(pid);
+            });
+
+            console.log("producto repetido", product);
+
+/*             const quantity = 2
+
+            const indiceencontrado2 = updateProduct.map(item => item.id).indexOf(pid);
+            cartproducts2[indiceencontrado2] ={...cartproducts2[indiceencontrado2], id: pid, quantity: quantity};
+
+            console.log("new carritoprodtc2", cartproducts2);   
+
+            console.log("Actualizacion producto en carrito id ",cid," actualizacion productos de ", cartproducts2);
+    
+           const indiceencontrado = updateProduct.map(item => item.id).indexOf(cid);
+            updateProduct[indiceencontrado] ={...updateProduct[indiceencontrado], id: cid, products: cartproducts2};
+              this.updatedb() */
+    
+          }
 
     }
+  }
 
     /**Creacion Instancias */
      const CartManagerA = new CartManager(path.join(__dirname, "CartManagerA.json"));
-
-    /*Listar Productos sin crear*/
-/* console.log(`lista de Productos: `);
-ProductManagerA.getProducts();
-console.log("....."); */
-    
-/* console.log("Agregando Productos instantancia ProductManagerA");
-ProductManagerA.addProduct("ProductManagerA1","descripcion producto1",10,"Sin Imagen",100,1000)
-ProductManagerA.addProduct("ProductManagerA2","descripcion producto2",20,"Sin Imagen",90,2001)
-ProductManagerA.addProduct("ProductManagerA3","descripcion producto3",30,"Sin Imagen",80,3002)
-ProductManagerA.addProduct("ProductManagerA4","descripcion producto4",40,"Sin Imagen",70,4003)
-ProductManagerA.addProduct("ProductManagerA5","descripcion producto5",50,"Sin Imagen",60,5004)
-ProductManagerA.addProduct("ProductManagerA6","descripcion producto6",60,"Sin Imagen",50,6005)
-ProductManagerA.addProduct("ProductManagerA7","descripcion producto7",70,"Sin Imagen",40,7006)
-ProductManagerA.addProduct("ProductManagerA8","descripcion producto8",80,"Sin Imagen",30,8007)
-ProductManagerA.addProduct("ProductManagerA9","descripcion producto9",90,"Sin Imagen",20,9008)
-ProductManagerA.addProduct("ProductManagerA10","descripcion producto10",100,"Sin Imagen",10,100009)
-*/
-
-
-
-
-
-/*Listar Productos creados*/
-        
-/* console.log(`lista de Productos instancia ProductManagerA: `);
-ProductManagerA.getProducts(); */
-
-/* const ProductManagerB = new ProductManager(path.join(__dirname, "ProductManagerB.json"));
-
-console.log("Agregando Productos instantancia ProductManagerB");
-
-ProductManagerB.addProduct("ProductManagerB1","descripcion producto2",200,"Sin Imagen",20,4321)
-ProductManagerB.addProduct("ProductManagerB1","descripcion producto2",200,"Sin Imagen",20,4325)
-ProductManagerB.addProduct("ProductManagerB2","descripcion producto2",200,"Sin Imagen",20,5321) */
-        
-/*Variable para buscar productos*/
-/* const productobuscado1=2;
-console.log(`informacion Producto id ${productobuscado1}: en instancia ProductManagerA`);
-ProductManagerA.getProductById(productobuscado1); */
-
-
-        
-/*Variable para Update productos*/
-/* const productobuscado2=2;
-const updatecampo2="price";
-const updateprice2=2200;
-console.log(`update db en precio ${updateprice2} al producto con ID ${productobuscado2}: en instancia ProductManagerB`);
-ProductManagerB.updateProduct(productobuscado2, updatecampo2, updateprice2); */
-        
-
-/*Variable para Update productos*/
-/* const productobuscado3=3;
-const updatecampo3="stock";
-const updateprice3=321;
-console.log(`update db en precio ${updateprice3} al producto con ID ${productobuscado3}: en instancia ProductManagerA`);
-ProductManagerA.updateProduct(productobuscado3, updatecampo3, updateprice3); */
-
-
-/*Variable para Eliminar productos*/
-/* const productobuscado4=2;
-console.log(`Eliminar el producto con ID ${productobuscado4}: en instancia ProductManagerA, Objeto eliminado:`);
-ProductManagerA.deleteProduct(productobuscado4);
-console.log(`lista de ProductosA: `);
-ProductManagerA.getProducts(); */
 
 
 module.exports = CartManagerA;
