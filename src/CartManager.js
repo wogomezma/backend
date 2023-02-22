@@ -63,37 +63,41 @@ class CartManager {
 
     addProduct(id) {
 
+ //Agrega Carrito con ID Generado desde cart.routes
       this.getdb()
 
-/*     const findElement = (array, searchedCode) => {
-        return array.find(element => element.code === searchedCode) ?? false;
-      }
-      
-      const coderepetido = findElement(this.products, code)
-
-    if (coderepetido == false) {
-
-
-
-        const id = this.generateID() */
-
-        /* Agrega Producto */
-        this.products.push({id: id, products: {}});
+        this.products.push({ id, products: [] });
         this.updatedb()
 
-
-     /*  } else {
-        console.log("Code repetido, favor cambiarlo");
- 
-      }
- */
       }
 
       addProduct2(cid,pid) {
 
+//Agrega Producto a Carrito        
         this.getdb()
+        
+        const cart = this.products.find((u) => {
+          return u.id === Number(cid);
+        });
 
-        const updateProduct = this.products
+        const objcart = cart.products
+
+        console.log("productos carrito", cart);
+
+        if (objcart.some((item) => item.id === pid)) {
+          const index = objcart.findIndex((item) => item.id === pid);
+          objcart[index].quantity++;
+        } else {
+          objcart.push({ id: pid, quantity: 1 });
+        }
+         console.log("carrito final", objcart);
+
+        this.updatedb()
+      }
+    }
+        
+
+/*         const updateProduct = this.products
                   
        const cartproducts = updateProduct.find((u) => {
           return u.id === Number(cid);
@@ -103,14 +107,12 @@ class CartManager {
 
         console.log("productos encontrados en carrito", cartproducts2);
         
-/*         const findElement1 = (array, searchedID) => {
+         const findElement1 = (array, searchedID) => {
           return array.find(element => element.id === searchedID) ?? "error no encuentra el producto";
         }
         
-        const idrepetido = findElement1(cartproducts2, pid) */
+        const idrepetido = findElement1(cartproducts2, pid) 
         
-       const idrepetido = false
-
         if (idrepetido == false) {
 
                
@@ -143,7 +145,7 @@ class CartManager {
 
             console.log("producto repetido", product);
 
-/*             const quantity = 2
+            const quantity = Number(product.quantity)+1
 
             const indiceencontrado2 = updateProduct.map(item => item.id).indexOf(pid);
             cartproducts2[indiceencontrado2] ={...cartproducts2[indiceencontrado2], id: pid, quantity: quantity};
@@ -154,13 +156,13 @@ class CartManager {
     
            const indiceencontrado = updateProduct.map(item => item.id).indexOf(cid);
             updateProduct[indiceencontrado] ={...updateProduct[indiceencontrado], id: cid, products: cartproducts2};
-              this.updatedb() */
+              this.updatedb() 
     
           }
 
-    }
-  }
+    }*/
 
+  
     /**Creacion Instancias */
      const CartManagerA = new CartManager(path.join(__dirname, "CartManagerA.json"));
 
