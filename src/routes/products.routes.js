@@ -5,8 +5,10 @@ const ProductManagerA = require("../ProductManager")
 const listproducts2 = require("../ProductManagerA.json")
 
 
-const router = Router();
+
 const listproducts = ProductManagerA
+
+const router = Router();
 // getAllProducts
 // /api/products
 
