@@ -34,21 +34,16 @@ const io = new Server(server);
 const logs = [];
 io.on("connection", (socket) => {
   console.log("a new client is Connected");
-  //canal1 se utiliza para la primera fase del ejercicio
-/*   socket.on("messageByCharacter", (data) => {
-    console.log("🚀 ~ file: app.js:37 ~ socket.on ~ data", data);
-    io.emit("log", data);
-  }); */
+
 
  socket.on("messageBySocket", (data) => {
-    console.log("🚀 ~ file: app.js:42 ~ socket.on ~ data", data);
+    console.log("data:", data);
     logs.push({ socketid: `${socket.id}-`, message: data });
     io.emit("log", { logs });
   });  
 
   socket.broadcast.emit(
     "messageForEveryone",
-    "ESTE MENSAJE SE HACE EN BROADCAST PARA TODOS EXCEPTO AL SOCKET QUE RECIBE"
   );
 
   io.emit("messageAll", "SALUDOS DESDE EL BACKEND");
