@@ -1,6 +1,6 @@
 const socket = io();
 
-const input = document.getElementById("textbox");
+/* const input = document.getElementById("textbox");
 const log = document.getElementById("log");
 input.addEventListener("keyup", (evt) => {
   if (evt.key === "Enter") {
@@ -18,5 +18,5 @@ socket.on("log", (data) => {
 });
 
 socket.on("messageForEveryone", (data) => {
-  console.log("data", data);
-});
+  console.log("data home", data);
+}); */

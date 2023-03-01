@@ -1,6 +1,5 @@
 const socket = io();
 
-
 const input = document.getElementById("textbox");
 const log = document.getElementById("log");
 input.addEventListener("keyup", (evt) => {
@@ -11,13 +10,21 @@ input.addEventListener("keyup", (evt) => {
 });
 
 socket.on("log", (data) => {
-  let logs = "";
-  data.logs.forEach((log) => {
-    logs += `${log.socketid} dice: ${log.message}<br/>`;
-  });
+  console.log("dataenjsantes",data);
+  var logs = data
+  .map(function (elem, index) {
+    return `<div>
+            <strong>ID ${elem.id}</strong>:
+            </div>
+            <em>Title: ${elem.title}</em>
+            <p>Description: ${elem.description}</p>
+            <p>Price: ${elem.price}</p>
+            <p>Stock: ${elem.stock}</p>
+          </div>`;
+  }) 
   log.innerHTML = logs;
 });
 
 socket.on("messageForEveryone", (data) => {
-  console.log("data", data);
+  console.log("🚀 ~ file: home.js:34 ~ socket.on ~ data", data);
 });
