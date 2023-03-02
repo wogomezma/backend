@@ -43,5 +43,5 @@ function addproduct(e) {
 
 
 socket.on("messageForEveryone", (data) => {
-  console.log("🚀 ~ file: home.js:34 ~ socket.on ~ data", data);
+  console.log("data", data);
 });
