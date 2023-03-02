@@ -7,8 +7,6 @@
     <h1>Eliminar Producto</h1>
     <p>Ingrese el ID del producto que desea eliminar y presione enter</p>
     <input id="textbox">
-    <h2>Nueva Actualizacion de productos despues de eliminar</h2>
-    <p id="log"></p>
 </div>
 <br></br>
 <hr>
@@ -16,7 +14,7 @@
 </section>
 <section>
 <h1>Crear Producto</h1>
-<form onsubmit="return addMessageadd(this)">
+<form onsubmit="return addproduct(this)">
   <label for="campo1">Title:</label>
   <input type="text" id="addtitle" name="addtitle"><br>
 
@@ -24,26 +22,31 @@
   <input type="text" id="adddescription" name="adddescription"><br>
 
   <label for="campo3">Price:</label>
-  <input type="text" id="addprice" name="addprice"><br>
+  <input type="number" id="addprice" name="addprice"><br>
 
   <label for="campo4">Thumbnail:</label>
   <input type="text" id="addthumbnail" name="addthumbnail"><br>
 
   <label for="campo5">Stock:</label>
-  <input type="text" id="addstock" name="addstock"><br>
+  <input type="number" id="addstock" name="addstock"><br>
 
   <label for="campo6">Code:</label>
-  <input type="text" id="addcode" name="addcode"><br>
+  <input type="number" id="addcode" name="addcode"><br>
 
   <input type="submit" value="Crear">
 </form>
 
 
 </section>
+<br></br>
+<hr>
 <section>
-    <h1>Historico de Productos</h1>
-        {{{body}}}
+    <h2>Productos en Tiempo Real</h2>
+    <p id="log"></p>
 </section>
+<br></br>
+<hr>
+
 
 
 <script src="/socket.io/socket.io.js"></script>

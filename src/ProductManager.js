@@ -13,7 +13,7 @@ class ProductManager {
       getdb(){
         const listproducts = fs.readFileSync(this.path, "utf-8");
         this.products = JSON.parse(listproducts)
-        console.log("Get Base de Datos");
+        /* console.log("Get Base de Datos"); */
       }
   
   
@@ -27,7 +27,7 @@ class ProductManager {
     getProducts() {
       try {
         this.getdb()
-         return console.log(this.products);
+         return /* console.log(this.products); */
       } catch (error) {
       }
     }

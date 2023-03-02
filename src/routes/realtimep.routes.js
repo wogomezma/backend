@@ -4,10 +4,12 @@ const ProductManager = require("../ProductManager")
 const router = Router();
 
 router.get(`/`, (req, res) => {
-    console.log("Query PARAMS", req.query);
+    console.log("Query PARAMS Realtime", req.query);
 
     ProductManager.getProducts()
    
+
+
   var html = ProductManager.products
   .map(function (elem, index) {
     return `<div>

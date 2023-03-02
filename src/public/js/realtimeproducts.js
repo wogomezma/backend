@@ -25,6 +25,23 @@ socket.on("log", (data) => {
   log.innerHTML = logs;
 });
 
+
+function addproduct(e) {
+  var newproduct = {
+    title: document.getElementById("addtitle").value,
+    description: document.getElementById("adddescription").value,
+    price: document.getElementById("addprice").value,
+    thumbnail: document.getElementById("addthumbnail").value,
+    stock: document.getElementById("addstock").value,
+    code: document.getElementById("addcode").value,
+  };
+
+    console.log("messageform",newproduct);
+  socket.emit("messageByaddproduct", newproduct);
+  return false;
+}
+
+
 socket.on("messageForEveryone", (data) => {
   console.log("🚀 ~ file: home.js:34 ~ socket.on ~ data", data);
 });

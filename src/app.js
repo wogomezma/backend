@@ -38,29 +38,37 @@ const io = new Server(server);
 const logs = [];
 io.on("connection", (socket) => {
   console.log("a new client is Connected");
-  
-  //canal1 se utiliza para la primera fase del ejercicio
-  socket.on("messageByCharacter", (data) => {
-    console.log("🚀 ~ file: app.js:37 ~ socket.on ~ data", data);
-    ProductManager.deleteProduct(data)
-    io.emit("log", data);
-  });
+  ProductManager.getProducts()
 
-  // // //canl2 se utiliza para la parte de almacenar y devolver los logs completos.
+   var log = ProductManager.products
+       
+    io.emit("log", log);
+
   socket.on("messageBySocket", (data) => {
     console.log("🚀 ~ file: app.js:42 ~ socket.on ~ data", data);
 
     ProductManager.deleteProduct(Number(data))
     ProductManager.getProducts()
-    // aplicar alguna logica en base la data, el usuario y otros parametros
 
-    const title = JSON.stringify(listproducts)
-    
+   
 
     var log = ProductManager.products
        
     io.emit("log", log);
   });
+
+  socket.on("messageByaddproduct", (data) => {
+    console.log("🚀 ~ file: app.js:57 ~ socket.on ~ data", data);
+
+   ProductManager.getProducts()
+  
+   const {title,description,price,thumbnail,stock,code} = data;
+   ProductManager.addProduct(title,description,price,thumbnail,stock,code)
+   var log = ProductManager.products
+       
+    io.emit("log", log);
+  });
+
 
   socket.broadcast.emit(
     "messageForEveryone",
