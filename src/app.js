@@ -45,7 +45,9 @@ io.on("connection", (socket) => {
     io.emit("log", log);
 
   socket.on("messageBySocket", (data) => {
-    console.log("data", data);
+    console.log("🚀 ~ file: app.js:48 ~ socket.on ~ data:", data)
+
+    
 
     ProductManager.deleteProduct(Number(data))
     ProductManager.getProducts()
@@ -58,8 +60,8 @@ io.on("connection", (socket) => {
   });
 
   socket.on("messageByaddproduct", (data) => {
-    console.log("data", data);
-
+    console.log("🚀 ~ file: app.js:63 ~ socket.on ~ data:", data)
+  
    ProductManager.getProducts()
   
    const {title,description,price,thumbnail,stock,code} = data;
