@@ -1,31 +1,44 @@
 const { Router } = require("express");
-const listproducts2 = require("../ProductManagerA.json")
+const CartsManager = require("../dao/managers/carts.manager");
+const ProductsManager = require("../dao/managers/products.manager");
 
-const router = Router();
+class ViewsRoutes {
+  path = "/views";
+  router = Router();
+  productsManager = new ProductsManager();
+  cartsManager = new CartsManager();
 
+  constructor() {
+    this.initViewsRoutes();
+  }
 
-router.get(`/`, (req, res) => {
-  console.log("Query PARAMS", req.query);
-  const title = JSON.stringify(listproducts2)
+  initViewsRoutes() {
+    this.router.get(`${this.path}/products`, async (req, res) => {
+      // let products = [
+      //   { name: "prueba", description: "descripcionPrueba", code: "12345678" },
+      // ];
+      const products = await this.productsManager.getAllProducts();
+      const mappedProducts = products.map((pr) => {
+        return {
+          name: pr.name,
+          description: pr.description,
+          dni: pr.code,
+        };
+      });
+      res.render("products", { products: mappedProducts });
+    });
 
- console.log("productos a mostrar en home: ", listproducts2[0].title);
+    this.router.get(`${this.path}/carts`, async (req, res) => {
+      // let carts = [];
+      const carts = await this.cartsManager.getAllCarts();
+      const cartsMapped = carts.map((carts) => {
+        return {
+          title: carts.title,
+        };
+      });
+      res.render("carts", { carts: cartsMapped });
+    });
+  }
+}
 
- var html = listproducts2
- .map(function (elem, index) {
-   return `<div>
-           <strong>ID ${elem.id}</strong>:
-           </div>
-           <em>Title: ${elem.title}</em>
-           <p>Description: ${elem.description}</p>
-           <p>Price: ${elem.price}</p>
-           <p>Stock: ${elem.stock}</p>
-         </div>`;
- }) 
-
-
-  res.render("home",{ body: html });
-
-});
-
-
-module.exports = router;
+module.exports = ViewsRoutes;

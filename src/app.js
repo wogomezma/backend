@@ -1,87 +1,87 @@
 const express = require("express");
+const cors = require("cors");
+const displayRoutes = require("express-routemap");
 const handlebars = require("express-handlebars");
-const { Server } = require("socket.io");
-const path = require("path");
-const realtimepRoutes = require("./routes/realtimep.routes");
-const listproducts = require("./ProductManagerA.json");
-const ProductManager = require("./ProductManager")
-const productsRoutes  = require("./routes/products.routes");
-const cartRoutes  = require("./routes/cart.routes");
 
+const corsConfig = require("./config/cors.config");
+const { mongoDBconnection } = require("./db/mongo.config");
 
+const { PORT, NODE_ENV } = require("./config/config");
 
-const viewsRoute = require("./routes/views.routes");
+const API_VERSION = "v1";
 
-const PORT = 8080;
-const BASE_PREFIX = "api"
+class App {
+  app;
+  env;
+  port;
+  server;
 
+  constructor(routes) {
+    this.app = express();
+    this.env = NODE_ENV || "development";
+    this.port = Number(PORT) || 8080;
 
-const app = express();
+    this.connectToDatabase();
+    this.initializeMiddlewares();
+    this.initializeRoutes(routes);
+    this.initHandlebars();
+  }
 
-// CONFIGURACION DE HANDELBARS
-app.engine("handlebars", handlebars.engine());
-app.set("views", path.join(`${__dirname}/views`));
-app.set("view engine", "handlebars");
+  /**
+   * getServer
+   */
+  getServer() {
+    return this.app;
+  }
 
-app.use(express.static(`${__dirname}/public`));
+  closeServer(done) {
+    this.server = this.app.listen(this.port, () => {
+      done();
+    });
+  }
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+  /**
+   * connectToDatabase
+   */
+  async connectToDatabase() {
+    // TODO: Inicializar la conexion
+    await mongoDBconnection();
+  }
 
-app.use("/", viewsRoute);
-app.use("/realtimeproducts", realtimepRoutes);
+  initializeMiddlewares() {
+    this.app.use(cors(corsConfig));
+    this.app.use(express.json());
+    this.app.use(express.urlencoded({ extended: true }));
+    this.app.use("/static", express.static(`${__dirname}/public`));
+  }
 
+  /**
+   * initializeRoutes
+   */
+  initializeRoutes(routes) {
+    routes.forEach((route) => {
+      this.app.use(`/api/${API_VERSION}`, route.router);
+    });
+  }
 
-const server = app.listen(PORT, () => console.log(`Listening on ${PORT}`));
-const io = new Server(server);
+  /**
+   * listen
+   */
+  listen() {
+    this.app.listen(this.port, () => {
+      displayRoutes(this.app);
+      console.log(`=================================`);
+      console.log(`======= ENV: ${this.env} =======`);
+      console.log(`🚀 App listening on the port ${this.port}`);
+      console.log(`=================================`);
+    });
+  }
 
-const logs = [];
-io.on("connection", (socket) => {
-  console.log("a new client is Connected");
-  ProductManager.getProducts()
+  initHandlebars() {
+    this.app.engine("handlebars", handlebars.engine());
+    this.app.set("views", __dirname + "/views");
+    this.app.set("view engine", "handlebars");
+  }
+}
 
-   var log = ProductManager.products
-       
-    io.emit("log", log);
-
-  socket.on("messageBySocket", (data) => {
-    console.log("🚀 ~ file: app.js:48 ~ socket.on ~ data:", data)
-
-    
-
-    ProductManager.deleteProduct(Number(data))
-    ProductManager.getProducts()
-
-   
-
-    var log = ProductManager.products
-       
-    io.emit("log", log);
-  });
-
-  socket.on("messageByaddproduct", (data) => {
-    console.log("🚀 ~ file: app.js:63 ~ socket.on ~ data:", data)
-  
-   ProductManager.getProducts()
-  
-   const {title,description,price,thumbnail,stock,code} = data;
-   ProductManager.addProduct(title,description,price,thumbnail,stock,code)
-   var log = ProductManager.products
-       
-    io.emit("log", log);
-  });
-
-
-  socket.broadcast.emit(
-    "messageForEveryone",
-    "ESTE MENSAJE SE HACE EN BROADCAST PARA TODOS EXCEPTO AL SOCKET QUE RECIBE"
-  );
-
-  io.emit("messageAll", "SALUDOS DESDE EL BACKEND");
-});
-
-
-
-// /api/users --> userRoutes
-app.use(`/${BASE_PREFIX}/products`, productsRoutes);
-app.use(`/${BASE_PREFIX}/cart`, cartRoutes);
+module.exports = App;
