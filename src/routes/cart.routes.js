@@ -14,7 +14,7 @@ class CartsRoutes {
   initCartsRoutes() {
     this.router.get(`${this.path}`, async (req, res) => {
       try {
-        const allCarts = await this.courseManager.getAllCarts();
+        const allCarts = await this.cartsManager.getAllCarts();
 
         return res.json({
           message: `get all the carts availables`,
@@ -33,7 +33,7 @@ class CartsRoutes {
       try {
         const id = req.params.courseId;
         const cartsDetail = await this.cartsManager.getCartsById(id);
-        // TODO: Agregar validacion
+        
 
         return res.json({
           message: `carts details successfully`,
@@ -51,7 +51,7 @@ class CartsRoutes {
       try {
         const cartsBody = req.body;
         const newCarts = await this.cartsManager.createCarts(cartsBody);
-        // TODO AGREGAR VALIDACIONES
+        
         if (!newCarts) {
           return res.json({
             message: `this carts ${cartsBody.title} is already created`,
@@ -73,7 +73,7 @@ class CartsRoutes {
     this.router.put(`${this.path}/:cartsId`, async (req, res) => {
       const cartssBody = req.body;
       const { cartsId } = req.params;
-      // TODP: AGREGAR VALIDACIONES SOBRE EL BODY Y EL CARTS ID
+      
       const updatedCarts = await cartsModel.updateOne(
         { _id: cartsId },
         cartsBody
@@ -83,7 +83,7 @@ class CartsRoutes {
         updatedCarts
       );
 
-      // TODO: VALIDACION SI HAY PROBLEMAS ACTUALIZANDO
+      
 
       return res.json({
         message: `course ${cartsId} updated succesfully`,

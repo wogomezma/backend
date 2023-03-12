@@ -2,9 +2,13 @@ const express = require("express");
 const cors = require("cors");
 const displayRoutes = require("express-routemap");
 const handlebars = require("express-handlebars");
-
+const { Server } = require("socket.io");
 const corsConfig = require("./config/cors.config");
 const { mongoDBconnection } = require("./db/mongo.config");
+
+const realtimepRoutes = require("./routes/realtimep.routes");
+const listproducts = require("./ProductManagerA.json");
+const ProductManager = require("./ProductManager")
 
 const { PORT, NODE_ENV } = require("./config/config");
 
@@ -44,8 +48,7 @@ class App {
    * connectToDatabase
    */
   async connectToDatabase() {
-    // TODO: Inicializar la conexion
-    await mongoDBconnection();
+      await mongoDBconnection();
   }
 
   initializeMiddlewares() {
@@ -83,5 +86,24 @@ class App {
     this.app.set("view engine", "handlebars");
   }
 }
+
+
+const io = new Server(App.server);
+console.log(App);
+io.on('connection', (socket) => {
+  console.log('a user connected');
+
+  socket.on('chat message', (msg) => {
+    console.log('message: ' + msg);
+
+    // Broadcast to all clients
+    io.emit('chat message', msg);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('user disconnected');
+  });
+});
+
 
 module.exports = App;

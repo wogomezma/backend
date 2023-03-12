@@ -1,4 +1,4 @@
-const productsModel = require("../models/products.models");
+const productsModel = require("../models/products.model");
 
 class ProductsManager {
   getAllProducts = async () => {
@@ -7,7 +7,7 @@ class ProductsManager {
       return productsArr;
     } catch (error) {
       console.log(
-        "🚀 ~ file: products.routes.js:42 ~ ProductsRoutes ~ this.router.get ~ error:",
+        "🚀 ~ file: products.managers.js:9 ~ ProductsRoutes ~ this.router.get ~ error:",
         error
       );
     }
@@ -28,7 +28,7 @@ class ProductsManager {
 
   createProducts = async (bodyProducts) => {
     try {
-      // TODO REVISANDO SI EL PRODUCTO YA FUE CREADO ANTERIOMENTE
+      
       const productsDetail = await productsModel.findOne({
         code: bodyProducts.code,
       });
@@ -37,7 +37,7 @@ class ProductsManager {
       }
 
       const newProducts = await productsModel.create(bodyProducts);
-      // TODO: Manejar el error o si pasa algo mientras creo el documento del producto
+      
 
       return newProducts;
     } catch (error) {

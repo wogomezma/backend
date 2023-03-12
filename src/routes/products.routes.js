@@ -1,9 +1,9 @@
 const { Router } = require("express");
 
-const productsModel = require("../dao/models/products.models");
+const productsModel = require("../dao/models/products.model");
 
 const productsData = require("../db/products");
-const ProductsManager = require("../dao/managers/products.manager");
+const ProductsManager = require("../dao/managers/products.managers");
 
 class ProductsRoutes {
   path = "/products";
@@ -18,8 +18,7 @@ class ProductsRoutes {
     this.router.get(`${this.path}/insertion`, async (req, res) => {
       try {
         const products = await productsModel.insertMany(productsData);
-        // TODO: agregar validaciones
-
+        
         return res.json({
           message: "products insert successfully",
           productsInserted: products,
@@ -34,7 +33,6 @@ class ProductsRoutes {
 
     this.router.get(`${this.path}`, async (req, res) => {
       try {
-        // TODO: agregar validaciones
         const productsArr = await this.productsManager.getAllProducts();
         return res.json({
           message: `get all products succesfully`,
@@ -55,8 +53,7 @@ class ProductsRoutes {
         const productsDetail = await this.productsManager.getProductsById(
           productsId
         );
-        // TODO AGREGAR VALIDACION
-
+       
         return res.json({
           message: `get products info of ${productsId} succesfully`,
           products: productsDetail,
@@ -71,14 +68,13 @@ class ProductsRoutes {
 
     this.router.post(`${this.path}`, async (req, res) => {
       try {
-        // TODO: HACER VALIDACIONES DEL BODY
+       
         const productsBody = req.body;
 
-        // TODO REVISANDO SI EL ESTUDIANTE YA FUE CREADO ANTERIOMENTE
         const newProducts = await this.productsManager.createProducts(productsBody);
         if (!newProducts) {
           return res.json({
-            message: `the products with dni ${ProductsBody.dni} is already register`,
+            message: `the products with code ${productsBody.code} is already register`,
           });
         }
 
