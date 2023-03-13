@@ -1,38 +1,28 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Socket.IO Chat</title>
-  <style>
-    #messages {
-      height: 200px;
-      overflow: auto;
-    }
-  </style>
-</head>
-<body>
-  <div id="messages"></div>
-  <form id="form" action="">
-    <input type="text" id="input" autocomplete="off" />
-    <button>Send</button>
-  </form>
-  <script src="/socket.io/socket.io.js"></script>
-  <script>
-    const socket = io();
+  <head>
+    <title>Chat con Socket.io</title>
+  </head>
+  <body>
+    <h1>Chat con Socket.io</h1>
+    <div id="messages"></div>
+    <form id="message-form">
+      <input type="text" id="user" placeholder="Correo del usuario" required>
+      <input type="text" id="message" placeholder="Mensaje" required>
+      <button type="submit">Enviar</button>
+    </form>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+      const messageForm = document.getElementById('message-form');
+      const messagesDiv = document.getElementById('messages');
 
-    socket.on('connect', () => {
-      console.log('Connected to Socket.IO server');
-    });
+      // Escuchar mensajes del servidor
+      socket.on('message', data => {
+        const message = document.createElement('div');
+        message.innerText = `${data.user}: ${data.message}`;
+        messagesDiv.appendChild(message);
+      });
 
-    socket.on('chat message', (message) => {
-      const messages = document.getElementById('messages');
-      const newMessage = document.createElement('div');
-      newMessage.textContent = message;
-      messages.appendChild(newMessage);
-    });
-
-    const form = document.getElementById('form');
-    const input = document.getElementById('input');
-
-    form.addEventListener('submit', (event) => {
-      event.preventDefault();
-      const message = input.value
+      // Enviar mensaje al servidor
+      messageForm

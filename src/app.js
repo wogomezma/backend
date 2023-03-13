@@ -2,10 +2,10 @@ const express = require("express");
 const cors = require("cors");
 const displayRoutes = require("express-routemap");
 const handlebars = require("express-handlebars");
-const { Server } = require("socket.io");
+const mongoose = require('mongoose');
 const corsConfig = require("./config/cors.config");
 const { mongoDBconnection } = require("./db/mongo.config");
-
+const { Server } = require("socket.io");
 const realtimepRoutes = require("./routes/realtimep.routes");
 const listproducts = require("./ProductManagerA.json");
 const ProductManager = require("./ProductManager")
@@ -88,20 +88,44 @@ class App {
 }
 
 
-const io = new Server(App.server);
-console.log(App);
-io.on('connection', (socket) => {
-  console.log('a user connected');
+const server = App.listen
+const io = new Server(server);
 
-  socket.on('chat message', (msg) => {
-    console.log('message: ' + msg);
 
-    // Broadcast to all clients
-    io.emit('chat message', msg);
+
+
+// Configuración de mongoose
+const messageSchema = new mongoose.Schema({
+  user: String,
+  message: String
+});
+const Message = mongoose.model('messages', messageSchema);
+
+
+/* const io = new Server(App.server); */
+
+// Conexión con Socket.io
+io.on('connection', socket => {
+  console.log('Un usuario se ha conectado');
+
+  // Escuchar mensajes del usuario
+  socket.on('message', data => {
+    console.log(`Nuevo mensaje de ${data.user}: ${data.message}`);
+
+    // Guardar el mensaje en la base de datos
+    const message = new Message({
+      user: data.user,
+      message: data.message
+    });
+    message.save();
+
+    // Enviar el mensaje a todos los usuarios conectados
+    io.emit('message', data);
   });
 
+  // Desconexión del usuario
   socket.on('disconnect', () => {
-    console.log('user disconnected');
+    console.log('Un usuario se ha desconectado');
   });
 });
 
