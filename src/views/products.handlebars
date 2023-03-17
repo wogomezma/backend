@@ -1,4 +1,4 @@
-<H1>Lista de Productos</H1>
+{{!-- <H1>Lista de Productos</H1>
 
 {{#each products}}
   <p>Name: {{this.name}} </p>
@@ -9,4 +9,34 @@
   <p>Thumbnail: {{this.thumbnail}}</p>
   <p>Carts: {{this.carts}}</p>
   <p>-------------------</p>
-{{/each}}
+{{/each}} --}}
+
+
+  <h1>Lista de Productos</h1>
+  {{#each products}}
+  <p>Name: {{this.name}} </p>
+  <p>Description: {{this.description}}</p>
+  <p>Price: {{this.price}}</p>
+  <p>Code: {{this.code}}</p>
+  <p>Stock: {{this.stock}}</p>
+  <p>Thumbnail: {{this.thumbnail}}</p>
+  <p>-------------------</p>
+  {{/each}}
+
+  <div>
+    <p>Pagina actual {{page}}</p>
+    <p>Paginas totales {{totalPages}}</p>
+  </div>
+
+  {{#if hasPrevPage}}
+    <p>Pagina previa {{prevPage}}</p>
+    <a href="/api/v1/{{prevlink}}"><button
+      >Anterior</button></a>
+  {{/if}}
+
+  {{#if hasNextPage}}
+    <p>Pagina siguiente {{nextPage}}</p>
+    <a href="/api/v1/{{nextlink}}"><button
+      >Siguiente</button></a>
+  {{/if}}
+</div>
