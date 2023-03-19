@@ -144,13 +144,6 @@ class CartsManager {
       console.log("🚀 ~ file: carts.manager.js:98 ~ CartsManager ~ CartsAgregateAll= ~ quantity:", quantity)
 
 
-/*       const cartsById = await cartsModel.aggregate([
-        { $group: { _id: cid, carts: { $push: "$$ROOT" } } },
-      ]);
- */
-
-/*       const productsold = cartsById[0].carts
-      const objcart = productsold[0].products; */
 
       const objcart = []
       objcart.push({id: pid,quantity: quantity})
@@ -158,12 +151,7 @@ class CartsManager {
 
 
 
-/*       if (objcart.some((item) => item.id === pid)) {
-        const index = objcart.findIndex((item) => item.id === pid);
-        objcart[index].quantity++;
-      } else {
-        objcart.push({ id: pid, quantity: 1 });
-      } */
+
 
       const addproductincart = await cartsModel.updateOne({_id : {$eq:cid}} , {$set : {products: objcart} })
      

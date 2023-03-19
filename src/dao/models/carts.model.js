@@ -22,6 +22,7 @@ const cartsSchema = new mongoose.Schema({
     default: [],
   },
 });
+
 cartsSchema.plugin(mongoosePaginate);
 const cartsModel = mongoose.model(cartsCollection, cartsSchema);
 module.exports = cartsModel;
