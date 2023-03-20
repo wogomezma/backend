@@ -37,6 +37,7 @@ class ViewsRoutes {
         await productsModel.paginate({}, { limit: limit, page, lean: true });
         const prevlink = `${this.path}/products?page=${prevPage}&limit=${limit}`
         const nextlink = `${this.path}/products?page=${nextPage}&limit=${limit}`
+        const buylink = `${this.path}/products/${this.id}`
       res.render("products", {
         products: docs,
         page,
@@ -49,9 +50,38 @@ class ViewsRoutes {
         limit,
         prevlink,
         nextlink,
+        buylink,
       });
     });
 
+    this.router.get(`${this.path}/products/:cid/:pid`, async (req, res) => {
+      try {
+        const cartsBody = req.body;
+         const {pid,cid} = req.params
+        console.log("🚀 ~ file: views.routes.js:59 ~ ViewsRoutes ~ this.router.get ~ pid:", pid)
+        console.log("🚀 ~ file: views.routes.js:61 ~ ViewsRoutes ~ this.router.get ~ cid:", cid)
+
+
+        const addproductincart = await this.CartsManager.CartsAgregate(cid,  pid);
+        console.log("🚀 ~ file: views.routes.js:64 ~ ViewsRoutes ~ this.router.post ~ addproductincart:", addproductincart)
+        
+        if (!addproductincart) {
+          return res.json({
+            message: `this carts ${addproductincart} is already created`,
+          });
+        }
+
+        return res.json({
+          message: `the product is add in carts`,
+          carts: addproductincart,
+          cartsid: cid,
+          productsid: pid,
+        });
+      } catch (error) {
+      console.log("🚀 ~ file: views.routes.js:79 ~ ViewsRoutes ~ this.router.post ~ error:", error)
+
+      }
+    });
 
 
 /*     this.router.get(`${this.path}/chats`, (req, res) => {
@@ -96,6 +126,15 @@ class ViewsRoutes {
 }
 
 
+/* function addMessage(pid) {
 
+  const cid = "640d295253f2561f45d7afa0"
+
+  const addproductincart = CartsManager.CartsAgregate(cid, pid);
+  console.log("🚀 ~ file: views.routes.js:104 ~ addMessage ~ addproductincart:", addproductincart)
+
+  return addproductincart
+
+  }; */
 
 module.exports = ViewsRoutes;

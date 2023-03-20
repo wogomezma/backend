@@ -187,7 +187,12 @@ class CartsRoutes {
           carts: addproductincart,
           cartsid: cid,
           productsid: pid,
+          linkProducts: "/api/v1/views/products",
+          linkCarrito: `/api/v1/carts/${cid}`,
         });
+
+  
+
       } catch (error) {
         console.log(
           "🚀 ~ file: carts.routes.js:129 ~ CartsRoutes ~ this.router.post ~ error:",

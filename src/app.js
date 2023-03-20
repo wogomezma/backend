@@ -9,7 +9,7 @@ const { Server } = require("socket.io");
 const realtimepRoutes = require("./routes/realtimep.routes");
 const listproducts = require("./ProductManagerA.json");
 const ProductManager = require("./ProductManager")
-
+const CartsManager = require("./dao/managers/carts.manager");
 const { PORT, NODE_ENV } = require("./config/config");
 
 const API_VERSION = "v1";
@@ -128,6 +128,7 @@ io.on('connection', socket => {
     console.log('Un usuario se ha desconectado');
   });
 });
+
 
 
 module.exports = App;
