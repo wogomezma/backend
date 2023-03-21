@@ -67,7 +67,7 @@ class ViewsRoutes {
         
         if (!addproductincart) {
           return res.json({
-            message: `this carts ${addproductincart} is already created`,
+            message: `this product ${addproductincart} is already add in carts ${cid}`,
           });
         }
 
@@ -122,6 +122,33 @@ class ViewsRoutes {
       nextlink,
     });
   });
+
+  this.router.get(`${this.path}/carts/:cartsId`, async (req, res) => {
+    try {
+      const id = req.params.cartsId;
+      const cartsDetail = await this.cartsManager.getCartsById(id);
+
+      const products2 = cartsDetail
+
+      console.log("🚀 ~ file: views.routes.js:134 ~ ViewsRoutes ~ this.router.get ~ products2:", products2)
+
+      console.log("🚀 ~ file: views.routes.js:130 ~ ViewsRoutes ~ this.router.get ~ cartsDetail:", cartsDetail.products)
+      return res.render("carts",{
+        message: `carts details successfully`,
+        carts: cartsDetail,
+        products2: products2,
+      }); 
+
+      } catch (error) {
+    console.log(
+      "🚀 ~ file: carts.routes.js:43 ~ CartsRoutes ~ this.router.get ~ error:",
+      error
+    );
+  }
+});
+
+
+
   }
 }
 

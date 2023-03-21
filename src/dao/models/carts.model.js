@@ -18,7 +18,16 @@ const cartsSchema = new mongoose.Schema({
     required: true,
   },
   products: {
-    type: Array,
+    type: [
+      {
+        product: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "products",
+        },
+        quantity: Number,
+        price: Number,
+      }
+    ],
     default: [],
   },
 });
