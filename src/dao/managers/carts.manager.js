@@ -19,7 +19,7 @@ class CartsManager {
 
   getCartsById = async (id) => {
     try {
-      return await cartsModel.findById({ _id: id });
+      return await cartsModel.find({ _id: id }).populate('products.product');
     } catch (error) {
       console.log(
         "🚀 ~ file: carts.manager.js:21 ~ CartsManager ~ getCartsById= ~ error:",
