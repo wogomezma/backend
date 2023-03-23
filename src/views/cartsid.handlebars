@@ -1,0 +1,59 @@
+{{!-- <H1>Lista de Carts</H1>
+
+{{#each carts}}
+  <p>Title: {{this.title}}</p>
+  <p>Description: {{this.description}}</p>
+  <p>Category: {{this.category}}</p>
+{{/each}} --}}
+
+  <h1>Lista de Productos del Carrito</h1>
+ 
+ <style>
+  table {
+    border-collapse: collapse;
+  }
+  
+  th, td {
+    text-align: left;
+    padding: 8px;
+  }
+  
+  th {
+    background-color: #4CAF50;
+    color: white;
+  }
+  
+  tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+  
+  td {
+    border-bottom: 1px solid #ddd;
+  }
+</style>
+
+<table>
+    <thead>
+ <tr>
+  <th>Products</th>
+{{#each productsname }}
+
+
+    <th>{{this}}</th>
+
+{{/each}}
+  </tr>
+  </thead>
+ <tbody>
+   <tr>
+    <th>quantity</th>
+{{#each productsquantity }}
+
+
+    <td>{{this}}</td>
+
+{{/each}}
+  </tr>
+</tbody>
+</table>
+

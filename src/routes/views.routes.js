@@ -127,17 +127,18 @@ class ViewsRoutes {
     try {
       const id = req.params.cartsId;
       const cartsDetail = await this.cartsManager.getCartsById(id);
+      const originalArray = cartsDetail[0].products
+      console.log("🚀 ~ file: views.routes.js:131 ~ ViewsRoutes ~ this.router.get ~ originalArray:", originalArray)
 
-      const products2 = cartsDetail
-
-      console.log("🚀 ~ file: views.routes.js:134 ~ ViewsRoutes ~ this.router.get ~ products2:", products2)
-
-      console.log("🚀 ~ file: views.routes.js:130 ~ ViewsRoutes ~ this.router.get ~ cartsDetail:", cartsDetail.products)
-      return res.render("carts",{
-        message: `carts details successfully`,
-        carts: cartsDetail,
-        products2: products2,
-      }); 
+      const productsname = originalArray.map(element => {
+        return element.product.name;
+      });
+      const productsquantity = originalArray.map(element => {
+        return element.quantity;
+      });
+      console.log("🚀 ~ file: views.routes.js:138 ~ ViewsRoutes ~ productsquantity ~ productsquantity:", productsquantity)
+      console.log("🚀 ~ file: views.routes.js:131 ~ ViewsRoutes ~ this.router.get ~ productsold:", productsname)
+      return res.render('cartsid', { productsname, productsquantity });
 
       } catch (error) {
     console.log(
