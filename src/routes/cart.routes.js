@@ -138,7 +138,7 @@ class CartsRoutes {
 
     this.router.put(`${this.path}/:cid/products/:pid`, async (req, res) => {
       try {
-        const quantity = req.body.quantity;
+        const {quantity=1} = req.body;
         const { cid  , pid } = req.params;
         console.log("🚀 ~ file: cart.routes.js:114 ~ CartsRoutes ~ this.router.post ~ pid:", pid)
         console.log("🚀 ~ file: cart.routes.js:114 ~ CartsRoutes ~ this.router.post ~ cid:", cid)

@@ -18,7 +18,8 @@ const cartsSchema = new mongoose.Schema({
     required: true,
   },
   products: {
-    type: [
+    type: 
+    [
       {
         product: {
           type: mongoose.Schema.Types.ObjectId,
@@ -26,8 +27,8 @@ const cartsSchema = new mongoose.Schema({
         },
         quantity: Number,
         price: Number,
-      }
-    ],
+      }
+    ],
     default: [],
   },
 });
