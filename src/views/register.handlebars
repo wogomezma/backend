@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Registration Form</title>
+	<style>
+		body {
+			background-color: #FCD116;
+		}
+		#form {
+			background-color: #003893;
+			color: #FFFFFF;
+			padding: 20px;
+			margin: 50px auto;
+			width: 400px;
+			border-radius: 10px;
+		}
+		input[type="text"],
+		input[type="email"],
+		input[type="password"] {
+			width: 100%;
+			padding: 12px 20px;
+			margin: 8px 0;
+			box-sizing: border-box;
+			border: none;
+			border-radius: 4px;
+			background-color: #FFFFFF;
+			color: #000000;
+		}
+		input[type="submit"] {
+			background-color: #FCD116;
+			color: #000000;
+			padding: 12px 20px;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+			width: 100%;
+			margin-top: 10px;
+		}
+		.error-message {
+			color: red;
+			margin-top: 5px;
+		}
+	</style>
+</head>
+<body>
+	<form id="form" action="/api/v1/session/register" method="post">
+		<label for="name">Name:</label>
+		<input type="text" id="name" name="name" required>
+
+		<label for="lastname">Lastname:</label>
+		<input type="text" id="lastname" name="lastname" required>
+
+		<label for="email">Email:</label>
+		<input type="email" id="email" name="email" required>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required minlength="8">
+
+        <label for="confirm-password">Confirm Password:</label>
+        <input type="password" id="confirm-password" name="confirm-password" required minlength="8" oninput="checkPasswordMatch()">
+        <span id="password-match"></span>
+		<p class="error-message" id="error-message"></p>
+
+		<input type="submit">
+	</form>
+
+    <script>
+        function checkPasswordMatch() {
+        var password = document.getElementById("password");
+        var confirm_password = document.getElementById("confirm-password");
+        var password_match = document.getElementById("password-match");
+
+        if (password.value != confirm_password.value) {
+            password_match.innerHTML = "Passwords do not match!";
+            confirm_password.setCustomValidity("Passwords do not match");
+        } else {
+            password_match.innerHTML = "";
+            confirm_password.setCustomValidity("");
+        }
+        }
+    </script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<script id="user-template" type="text/x-handlebars-template">
+		<h2>Thank you for registering, {{name}}!</h2>
+		<p>Your registration details:</p>
+		<ul>
+			<li>Name: {{name}}</li>
+			<li>Lastname: {{lastname}}</li>
+			<li>Email: {{email}}</li>
+		</ul>
+	</script>
+	<script src="registration.js"></script>
+</body>
+</html>

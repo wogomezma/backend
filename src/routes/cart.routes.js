@@ -14,25 +14,8 @@ class CartsRoutes {
   }
 
   initCartsRoutes() {
-    /* this.router.get(`${this.path}`, async (req, res) => {
-      try {
-        const allCarts = await this.cartsManager.getAllCarts();
-
-        return res.json({
-          message: `get all the carts availables`,
-          carts: allCarts,
-          amountOfCarts: allCarts.lenght,
-        });
-      } catch (error) {
-        console.log(
-          "🚀 ~ file: carts.routes.js:25 ~ CartsRoutes ~ this.router.get ~ error:",
-          error
-        );
-      }
-    }); */
 
     this.router.get(`${this.path}`, async (req, res) => {
-      // /api/carts?page=2&limit=10
       
       const { page = 1, limit = 10 } = req.query;
 

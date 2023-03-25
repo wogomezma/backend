@@ -3,14 +3,19 @@ const cors = require("cors");
 const displayRoutes = require("express-routemap");
 const handlebars = require("express-handlebars");
 const mongoose = require('mongoose');
+const session = require("express-session");
+const cookieParser = require("cookie-parser");
 const corsConfig = require("./config/cors.config");
-const { mongoDBconnection } = require("./db/mongo.config");
+const { mongoDBconnection, configConnection } = require("./db/mongo.config");
 const { Server } = require("socket.io");
 const realtimepRoutes = require("./routes/realtimep.routes");
 const listproducts = require("./ProductManagerA.json");
 const ProductManager = require("./ProductManager")
 const CartsManager = require("./dao/managers/carts.manager");
 const { PORT, NODE_ENV } = require("./config/config");
+const sessionRoutes = require("./routes/session.routes");
+const mongoStore = require("connect-mongo");
+const authMdw = require("./middleware/auth.middleware");
 
 const API_VERSION = "v1";
 
@@ -56,6 +61,19 @@ class App {
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use("/static", express.static(`${__dirname}/public`));
+    this.app.use(cookieParser());
+    this.app.use(
+      session({
+        store: mongoStore.create({
+          mongoUrl: configConnection.url,
+          mongoOptions: { useNewUrlParser: true, useUnifiedTopology: true },
+          ttl: 60 * 3600,
+        }),
+        secret: "secretSession",
+        resave: false,
+        saveUninitialized: false,
+      })
+    );
   }
 
   /**

@@ -12,7 +12,12 @@
 {{/each}} --}}
 
 
-  <h1>Lista de Productos</h1>
+  <h1>List Products</h1>
+  <h2>{{messagesession}}</h2>
+  <h3>Join all Carts (only rol admin)</h3>
+  <form action="/api/v1/views/carts" method="get">
+  <input type="submit" value="carts">
+</form>
   {{#each products}}
   <p>Name: {{this.name}} </p>
   <p>Description: {{this.description}}</p>
@@ -44,3 +49,6 @@
       >Siguiente</button></a>
   {{/if}}
 </div>
+<form action="/api/v1/session/logout" method="get">
+  <input type="submit" value="logout">
+</form>

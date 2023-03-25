@@ -3,6 +3,8 @@ const CartsManager = require("../dao/managers/carts.manager");
 const ProductsManager = require("../dao/managers/products.managers");
 const productsModel = require("../dao/models/products.model");
 const cartsModel = require("../dao/models/carts.model");
+const authMdw = require("../middleware/auth.middleware")
+const rolhMdw = require("../middleware/rol.middleware")
 
 class ViewsRoutes {
   path = "/views";
@@ -15,29 +17,35 @@ class ViewsRoutes {
   }
 
   initViewsRoutes() {
-/*     this.router.get(`${this.path}/products`, async (req, res) => {
-      const products = await this.productsManager.getAllProducts();
-      const mappedProducts = products.map((pr) => {
-        return {
-          name: pr.name,
-          description: pr.description,
-          code: pr.code,
-          price: pr.price,
-          stock: pr.stock,
-          thumbnail: pr.thumbnail,
-          carts: pr.carts,
-        };
-      });
-      res.render("products", { products: mappedProducts });
-    }); */
 
-    this.router.get(`${this.path}/products`, async (req, res) => {
-      const { page = 1 , limit= 10} = req.query; // extrae el query param page y sino viene el valor por defecto es 1
+    this.router.get(`${this.path}/`, async (req, res) => {
+      res.render("login");
+    });
+
+    this.router.get(`${this.path}/login`, async (req, res) => {
+      res.render("login");
+    });
+
+    this.router.get(`${this.path}/register`, async (req, res) => {
+      res.render("register");
+    });
+    this.router.get(`${this.path}/profile`, authMdw, async (req, res) => {
+      const user = req.session.user;
+      console.log("🚀 ~ file: views.routes.js:30 ~ ViewsRoutes ~ router.get ~ user:", user)
+      res.render("profile", {
+        user,
+        carrito: { carritoId: '6419fbc078eae46eb1fff5e5', products: [{ pid: '64137403363614f24646475b', nombre: 'Producto de prueba'}]}
+      });
+    });
+
+    this.router.get(`${this.path}/products`,authMdw, async (req, res) => {
+      const { page = 1 , limit= 10} = req.query;
       const { docs, hasPrevPage, hasNextPage, nextPage, prevPage, length, totalPages } =
         await productsModel.paginate({}, { limit: limit, page, lean: true });
         const prevlink = `${this.path}/products?page=${prevPage}&limit=${limit}`
         const nextlink = `${this.path}/products?page=${nextPage}&limit=${limit}`
         const buylink = `${this.path}/products/${this.id}`
+        const linkcarts = `${this.path}/carts`
       res.render("products", {
         products: docs,
         page,
@@ -51,10 +59,13 @@ class ViewsRoutes {
         prevlink,
         nextlink,
         buylink,
+        linkcarts,
       });
     });
 
-    this.router.get(`${this.path}/products/:cid/:pid`, async (req, res) => {
+
+
+    this.router.get(`${this.path}/products/:cid/:pid`,authMdw, async (req, res) => {
       try {
         const cartsBody = req.body;
          const {pid,cid} = req.params
@@ -102,7 +113,7 @@ class ViewsRoutes {
     });*/
   
 
-  this.router.get(`${this.path}/carts`, async (req, res) => {
+  this.router.get(`${this.path}/carts`,[authMdw,rolhMdw], async (req, res) => {
     const { page = 1 , limit= 10} = req.query; // extrae el query param page y sino viene el valor por defecto es 1
     const { docs, hasPrevPage, hasNextPage, nextPage, prevPage, length, totalPages } =
       await cartsModel.paginate({}, { limit: limit, page, lean: true });
@@ -123,7 +134,7 @@ class ViewsRoutes {
     });
   });
 
-  this.router.get(`${this.path}/carts/:cartsId`, async (req, res) => {
+  this.router.get(`${this.path}/carts/:cartsId`,authMdw, async (req, res) => {
     try {
       const id = req.params.cartsId;
       const cartsDetail = await this.cartsManager.getCartsById(id);
@@ -165,4 +176,4 @@ class ViewsRoutes {
 
   }; */
 
-module.exports = ViewsRoutes;
+module.exports = ViewsRoutes, ViewsRoutes.path;
