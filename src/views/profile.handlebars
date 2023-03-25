@@ -1,9 +1,8 @@
 <div>
   <h1>Perfil de usuario</h1>
 
-  <p>{{this.last_name}}</p>
+  <p>{{this.lastname}}</p>
   <p>{{this.email}}</p>
-  <p>{{this.age}}</p>
 
   <div>
     <form action="/api/session/logout" method="get">
@@ -13,3 +12,6 @@
   </div>
 
 </div>
+<form action="/api/v1/session/logout" method="get">
+  <input type="submit" value="logout">
+</form>
