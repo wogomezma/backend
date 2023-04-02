@@ -159,7 +159,9 @@ class ViewsRoutes {
   }
 });
 
-
+this.router.get(`${this.path}/recover`, async (req, res) => {
+  res.render("recover");
+});
 
   }
 }

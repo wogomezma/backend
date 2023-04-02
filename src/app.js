@@ -16,6 +16,8 @@ const { PORT, NODE_ENV } = require("./config/config");
 const sessionRoutes = require("./routes/session.routes");
 const mongoStore = require("connect-mongo");
 const authMdw = require("./middleware/auth.middleware");
+const passport = require('passport');
+const initializePassport = require("./config/passport.config");
 
 const API_VERSION = "v1";
 
@@ -74,6 +76,8 @@ class App {
         saveUninitialized: false,
       })
     );
+    initializePassport();
+    this.app.use(passport.initialize())
   }
 
   /**
@@ -146,6 +150,7 @@ io.on('connection', socket => {
     console.log('Un usuario se ha desconectado');
   });
 });
+
 
 
 
