@@ -12,17 +12,19 @@ const initializePassport = () => {
         clientID: GITHUB_CLIENT_ID,
         clientSecret: GITHUB_CLIENT_SECRET,
         callbackURL: "http://localhost:8080/api/v1/session/github/callback",
+        proxy: true,
+      scope: ['user:email'] //This is all it takes to get emails
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
           console.log("PROFILE INFO:", profile);
-          console.log("🚀 ~ file: passport.config.js:19 ~ profile._json?.email:", profile._json?.email)
-          let user = await userModel.findOne({ email: profile._json?.email });
+          console.log("🚀 ~ file: passport.config.js:21 ~ profile.emails:", profile.emails[0].value)
+          let user = await userModel.findOne({ email: profile.emails[0].value });
           if (!user) {
             let addNewUser = {
               name: profile._json.name,
               lastname: "github",
-              email: profile._json?.email,
+              email: profile.emails[0].value,
               password: "",
               rol: "user",
             };
