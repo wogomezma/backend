@@ -3,8 +3,9 @@ const CartsManager = require("../dao/managers/carts.manager");
 const ProductsManager = require("../dao/managers/products.managers");
 const productsModel = require("../dao/models/products.model");
 const cartsModel = require("../dao/models/carts.model");
-const authMdw = require("../middleware/auth.middleware")
+const checkAuthJwt = require("../middleware/auth-jwt.middleware")
 const rolhMdw = require("../middleware/rol.middleware")
+const handlePolicies = require("../middleware/handle-policies.middleware");
 
 class ViewsRoutes {
   path = "/views";
@@ -29,7 +30,7 @@ class ViewsRoutes {
     this.router.get(`${this.path}/register`, async (req, res) => {
       res.render("register");
     });
-    this.router.get(`${this.path}/profile`, authMdw, async (req, res) => {
+    this.router.get(`${this.path}/profile`, handlePolicies(["user", "admin"]), async (req, res) => {
       const user = req.session.user;
       console.log("🚀 ~ file: views.routes.js:30 ~ ViewsRoutes ~ router.get ~ user:", user)
       res.render("profile", {
@@ -38,7 +39,7 @@ class ViewsRoutes {
       });
     });
 
-    this.router.get(`${this.path}/products`,authMdw, async (req, res) => {
+    this.router.get(`${this.path}/products`,  handlePolicies(["user", "admin"]), async (req, res) => {
       const { page = 1 , limit= 10} = req.query;
       const { docs, hasPrevPage, hasNextPage, nextPage, prevPage, length, totalPages } =
         await productsModel.paginate({}, { limit: limit, page, lean: true });
@@ -65,7 +66,7 @@ class ViewsRoutes {
 
 
 
-    this.router.get(`${this.path}/products/:cid/:pid`,authMdw, async (req, res) => {
+    this.router.get(`${this.path}/products/:cid/:pid`, handlePolicies(["user", "admin"]), async (req, res) => {
       try {
         const cartsBody = req.body;
          const {pid,cid} = req.params
@@ -113,7 +114,7 @@ class ViewsRoutes {
     });*/
   
 
-  this.router.get(`${this.path}/carts`,[authMdw,rolhMdw], async (req, res) => {
+  this.router.get(`${this.path}/carts`, handlePolicies(["admin"]), async (req, res) => {
     const { page = 1 , limit= 10} = req.query; // extrae el query param page y sino viene el valor por defecto es 1
     const { docs, hasPrevPage, hasNextPage, nextPage, prevPage, length, totalPages } =
       await cartsModel.paginate({}, { limit: limit, page, lean: true });
@@ -134,7 +135,7 @@ class ViewsRoutes {
     });
   });
 
-  this.router.get(`${this.path}/carts/:cartsId`,authMdw, async (req, res) => {
+  this.router.get(`${this.path}/carts/:cartsId`, handlePolicies(["user", "admin"]), async (req, res) => {
     try {
       const id = req.params.cartsId;
       const cartsDetail = await this.cartsManager.getCartsById(id);

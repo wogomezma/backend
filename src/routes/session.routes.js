@@ -5,7 +5,9 @@ const CartsManager = require("../dao/managers/carts.manager");
 const productsModel = require("../dao/models/products.model");
 const passport = require("passport");
 const { createHashValue, isValidPasswd } = require("../utils/encrypt");
-
+const ROLES = require("../constantes/roles");
+const handlePolicies = require("../middleware/handle-policies.middleware");
+const { generateJWT } = require("../utils/jwt");
 
 const router = Router();
 
@@ -27,72 +29,76 @@ class SessionRoutes {
               return res.send({ message: `logout Error`, body: err });
             });
           });
-  
-        this.router.post(`${this.path}/login`, async (req, res) => {
+
+
+          this.router.post(`${this.path}/login`, async (req, res) => {
             try {
               const { email, password } = req.body;
-              const session = req.session;
-              console.log("🚀 ~ file: session.routes.js:36 ~ SessionRoutes ~ this.router.get ~ session:", session)
-              
-          
-              const findUser = await userModel.findOne({ email });
-              console.log("🚀 ~ file: session.routes.js:40 ~ SessionRoutes ~ this.router.get ~ findUser:", findUser)
- 
+              const findUser = req?.user || await userModel.findOne({ email });
           
               if (!findUser) {
                 const error= `este usuario ${email} no esta registrado`
                 return res.render("login", {error});
               }
               const isValidComparePsw = await isValidPasswd(password, findUser.password);
-              console.log("🚀 ~ file: session.routes.js:46 ~ SessionRoutes ~ this.router.post ~ isValidComparePsw:", isValidComparePsw);
-
               if (!isValidComparePsw) {
                 const error= `las credenciales son erroneas, por favor reviselas ${email}`
                 return res.render("login", {error});
               }
-
-/*               if (findUser.password !== password) {
-                const error= `password incorrecto para el usuario ${email}`
-                return res.render("login", {error});
-              } */
+          
+              const signUser = {
+                email,
+                rol: findUser.rol,
+                id: findUser._id,
+              };
+              // if(!)
+          
+              const token = await generateJWT({ ...signUser });
           
               req.session.user = {
-                ...findUser,
+                ...signUser,
               };
+          
+             /*  return res.json({ message: `welcome $${email},login success`, token }); */
 
-              const { page = 1 , limit= 10} = req.query;
+             const { page = 1 , limit= 10} = req.query;
               const { docs, hasPrevPage, hasNextPage, nextPage, prevPage, length, totalPages } =
                 await productsModel.paginate({}, { limit: limit, page, lean: true });
                 const prevlink = `${this.path}/products?page=${prevPage}&limit=${limit}`
                 const nextlink = `${this.path}/products?page=${nextPage}&limit=${limit}`
                 const buylink = `${this.path}/products/${this.id}`
                 const linkcarts = `${this.path}/carts`
-          
-              return res.render("products", {
-                name: req.session?.user?.name || findUser.name,
-                lastname: req.session?.user?.lastname || findUser.lastname,
-                email: req.session?.user?.email || email,
-                rol: req.session?.user?.rol || findUser.rol,
-                messagesession: `Welcome ${findUser.name} ${findUser.lastname} your rol is ${findUser.rol}`,
-                products: docs,
-                page,
-                hasPrevPage,
-                hasNextPage,
-                prevPage,
-                nextPage,
-                length,
-                totalPages,
-                limit,
-                prevlink,
-                nextlink,
-                buylink,
-                linkcarts,
-              });
-            } catch (error) {
-            console.log("🚀 ~ file: session.routes.js:61 ~ SessionRoutes ~ this.router.get ~ error:", error)
 
+             return res.render("products", {
+              name: req.session?.user?.name || findUser.name,
+              lastname: req.session?.user?.lastname || findUser.lastname,
+              email: req.session?.user?.email || email,
+              rol: req.session?.user?.rol || findUser.rol,
+              messagesession: `Welcome ${findUser.name} ${findUser.lastname} your rol is ${findUser.rol} your token is ${token}`,
+              products: docs,
+              page,
+              hasPrevPage,
+              hasNextPage,
+              prevPage,
+              nextPage,
+              length,
+              totalPages,
+              limit,
+              prevlink,
+              nextlink,
+              buylink,
+              linkcarts,
+            });
+
+            } catch (error) {
+              console.log(
+                "🚀 ~ file: session.routes.js:50 ~ router.post ~ error:",
+                error
+              );
             }
           });
+
+  
           
           this.router.post(`${this.path}/register`, async (req, res) => {
             try {
@@ -115,6 +121,23 @@ class SessionRoutes {
               );
             }
         });
+
+
+        this.router.get(`${this.path}/current`, handlePolicies(["public"]), async (req, res) => {
+          console.log(" VALIDANDO REQ", req.user);
+          return res.json({ message: `jwt en las los headers` });
+        });
+
+        this.router.get(`${this.path}/current/admin`, handlePolicies(["admin"]), async (req, res) => {
+          console.log(" VALIDANDO REQ", req.user);
+          return res.json({ message: `jwt en las los headers siendo ADMIN` });
+        });
+
+        this.router.get(`${this.path}/current/user`, handlePolicies(["user", "admin"]), async (req, res) => {
+            console.log(" VALIDANDO REQ", req.user);
+            return res.json({ message: `jwt en las los headers con rol User` });
+          }
+        );
 
         this.router.post(`${this.path}/update`, async (req, res) => {
           try {

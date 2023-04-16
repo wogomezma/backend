@@ -2,6 +2,8 @@ const { Router } = require("express");
 const cartsModel = require("../dao/models/carts.model");
 const CartsManager = require("../dao/managers/carts.manager");
 const { body, validationResult } = require('express-validator');
+const handlePolicies = require("../middleware/handle-policies.middleware");
+const userModel = require("../dao/models/user.model");
 
 
 class CartsRoutes {
@@ -68,30 +70,53 @@ class CartsRoutes {
       }
     });
 
-    this.router.post(`${this.path}`, async (req, res) => {
+    this.router.post(`${this.path}`,  handlePolicies(["user", "admin"]), async (req, res) => {
       try {
         const cartsBody = req.body;
         const newCarts = await this.cartsManager.createCarts(cartsBody);
-        
+        console.log("🚀 ~ file: cart.routes.js:77 ~ CartsRoutes ~ this.router.post ~ newCarts:", newCarts)
+        console.log("🚀 ~ file: cart.routes.js:82 ~ CartsRoutes ~ this.router.post ~ req.user:", req.user)
+        const {
+          user: { id },
+        } = req.user;
+      
+
+        const userData = await userModel.findById({ _id: id });
+        console.log("🚀 ~ file: cart.routes.js:84 ~ CartsRoutes ~ this.router.post ~ userData:", userData)
+
+        userData.carts.push({ cart: newCarts._id });
+        console.log("🚀 ~ file: cart.routes.js:88 ~ CartsRoutes ~ this.router.post ~ userData:", userData)
+
+        const updatedCarts = await userModel.updateOne({ _id: id }, userData);
+        console.log("🚀 ~ file: cart.routes.js:91 ~ CartsRoutes ~ this.router.post ~ updatedCarts:", updatedCarts)
+
+        if (!updatedCarts.acknowledged) {
+          return res.status(500).json({
+            message: `note has been created but can not be related`,
+          });
+        }
+
         if (!newCarts) {
           return res.json({
             message: `this carts ${cartsBody.title} is already created`,
           });
         }
+        
 
         return res.json({
           message: `the carts is created succesfully`,
           carts: newCarts,
+          userupdatecart: userData,
         });
       } catch (error) {
         console.log(
-          "🚀 ~ file: carts.routes.js:43 ~ CartsRoutes ~ this.router.post ~ error:",
+          "🚀 ~ file: carts.routes.js:101 ~ CartsRoutes ~ this.router.post ~ error:",
           error
         );
       }
     });
 
-    this.router.put(`${this.path}/:cid`, async (req, res) => {
+    this.router.put(`${this.path}/:cid`,  handlePolicies(["user", "admin"]), async (req, res) => {
       try {
         const { cid } = req.params;
         const { pid , quantity } = req.query
@@ -119,7 +144,7 @@ class CartsRoutes {
     });
 
 
-    this.router.put(`${this.path}/:cid/products/:pid`, async (req, res) => {
+    this.router.put(`${this.path}/:cid/products/:pid`,  handlePolicies(["user", "admin"]), async (req, res) => {
       try {
         const {quantity=1} = req.body;
         const { cid  , pid } = req.params;
@@ -150,7 +175,7 @@ class CartsRoutes {
       }
     });
 
-    this.router.post(`${this.path}/:cid/products/:pid`, async (req, res) => {
+    this.router.post(`${this.path}/:cid/products/:pid`,  handlePolicies(["user", "admin"]), async (req, res) => {
       try {
         const cartsBody = req.body;
         const { cid  , pid } = req.params;
@@ -186,7 +211,7 @@ class CartsRoutes {
 
     
 
-    this.router.delete(`${this.path}/:cid`, async (req, res) => {
+    this.router.delete(`${this.path}/:cid`,  handlePolicies(["user", "admin"]), async (req, res) => {
       try {
         const cartsBody = req.body;
         const { cid } = req.params;
@@ -214,7 +239,7 @@ class CartsRoutes {
     });
 
 
-    this.router.delete(`${this.path}/:cid/products/:pid`, async (req, res) => {
+    this.router.delete(`${this.path}/:cid/products/:pid`,  handlePolicies(["user", "admin"]), async (req, res) => {
       try {
         const cartsBody = req.body;
         const { cid, pid } = req.params;
@@ -242,7 +267,7 @@ class CartsRoutes {
       }
     });
 
-    this.router.put(`${this.path}/:cartsId`, async (req, res) => {
+    this.router.put(`${this.path}/:cartsId`,  handlePolicies(["user", "admin"]), async (req, res) => {
       const cartssBody = req.body;
       const { cartsId } = req.params;
       

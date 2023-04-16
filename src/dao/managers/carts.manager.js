@@ -30,6 +30,7 @@ class CartsManager {
 
   createCarts = async (cartsBody) => {
     try {
+      console.log("🚀 ~ file: carts.manager.js:32 ~ CartsManager ~ createCarts= ~ cartsBody:", cartsBody)
       const checkCarts = await cartsModel.findOne({
         title: `${cartsBody.title.toLowerCase()}`,
       });
@@ -42,6 +43,7 @@ class CartsManager {
         ...cartsBody,
         title: cartsBody.title.toLowerCase(),
       });
+      console.log("🚀 ~ file: carts.manager.js:46 ~ CartsManager ~ createCarts= ~ newCarts:", newCarts)
 
       return newCarts;
     } catch (error) {

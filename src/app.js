@@ -18,6 +18,7 @@ const mongoStore = require("connect-mongo");
 const authMdw = require("./middleware/auth.middleware");
 const passport = require('passport');
 const initializePassport = require("./config/passport.config");
+const usersRoutes = require("./routes/user.routes");
 
 const API_VERSION = "v1";
 
