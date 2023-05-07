@@ -31,7 +31,7 @@ class CartsRoutes {
 
     this.router.put(`${this.path}/:cid`, handlePolicies(["user"]), cartCtrl.updateCart);
 
-    this.router.post(`${this.path}/:cid/purchase`, handlePolicies(["public"]), cartCtrl.purchaseCart);
+    this.router.post(`${this.path}/:cid/purchase`, handlePolicies(["user"]), cartCtrl.purchaseCart);
 
 
     
