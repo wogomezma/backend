@@ -18,7 +18,9 @@ const {
   SECRET_JWT_ENV,
   GITHUB_CLIENT_ID,
   GITHUB_CLIENT_SECRET,
-  PERSISTENCE
+  PERSISTENCE,
+  EMAIL,
+  PSW_EMAIL
 } = process.env;
 
 module.exports = {
@@ -35,5 +37,7 @@ module.exports = {
   SECRET_JWT_ENV,
   GITHUB_CLIENT_ID,
   GITHUB_CLIENT_SECRET,
-  PERSISTENCE
+  PERSISTENCE,
+  EMAIL,
+  PSW_EMAIL
 };
