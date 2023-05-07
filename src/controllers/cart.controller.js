@@ -115,13 +115,7 @@ class CartCtrl {
           <h2>Purchase Confirmation</h2>
           <p>Hi {{name}},</p>
           <p>Your purchase has been completed successfully.</p>
-          <p>Here is a summary of your purchase:</p>
-          <ul>
-            {{#items}}
-            <li>{{name}} - {{quantity}} x {{price}}</li>
-            {{/items}}
-          </ul>
-          <p>Total: {{total}}</p>
+    
           <p>Thank you for shopping with us!</p>
         `
       };
