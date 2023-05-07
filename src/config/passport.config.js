@@ -1,6 +1,6 @@
 const passport = require("passport");
 const GithubStrategy = require("passport-github2");
-const userModel = require("../dao/models/user.model");
+const userModel = require("../models/user.model");
 const { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } = require("./config");
 const jwt = require("passport-jwt");
 const ROLES = require("../constantes/roles");

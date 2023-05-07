@@ -1,8 +1,8 @@
 const { Router } = require("express");
-const { find } = require("../dao/models/user.model");
-const userModel = require("../dao/models/user.model");
-const CartsManager = require("../dao/managers/carts.manager");
-const productsModel = require("../dao/models/products.model");
+const { find } = require("../models/user.model");
+const userModel = require("../models/user.model");
+const CartsManager = require("../services/carts.service");
+const productsModel = require("../models/products.model");
 const passport = require("passport");
 const { createHashValue, isValidPasswd } = require("../utils/encrypt");
 const ROLES = require("../constantes/roles");

@@ -1,8 +1,8 @@
 const { Router } = require("express");
-const CartsManager = require("../dao/managers/carts.manager");
-const ProductsManager = require("../dao/managers/products.managers");
-const productsModel = require("../dao/models/products.model");
-const cartsModel = require("../dao/models/carts.model");
+const CartsManager = require("../services/carts.service");
+const ProductsManager = require("../services/products.service");
+const productsModel = require("../models/products.model");
+const cartsModel = require("../models/carts.model");
 const checkAuthJwt = require("../middleware/auth-jwt.middleware")
 const rolhMdw = require("../middleware/rol.middleware")
 const handlePolicies = require("../middleware/handle-policies.middleware");

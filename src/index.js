@@ -5,6 +5,7 @@ const ProductsRoutes = require("./routes/products.routes");
 const viewsRoutes = require("./routes/views.routes");
 const SessionRoutes = require("./routes/session.routes");
 const usersRoutes = require("./routes/user.routes");
+const ticketsRoutes = require("./routes/tickets.routes");
 
 const app = new App([
   new BaseRoute(),
@@ -13,6 +14,7 @@ const app = new App([
   new viewsRoutes(),
   new SessionRoutes(),
   new usersRoutes(),
+  new ticketsRoutes(),
 ]);
 
 app.listen();
