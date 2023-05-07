@@ -68,32 +68,41 @@ class CartsManager {
     try {
       const { cid } = req.params;
       const { pid, quantity } = req.query;
-
+  
       // Buscar el carrito por ID
       const cart = await cartsModel.findById(cid);
-
+  
       if (!cart) {
         throw new Error("Cart not found");
       }
-
+  
+      // Buscar el producto por ID
+      const product = await productsModel.findById(pid);
+  
+      if (!product) {
+        throw new Error("Product not found");
+      }
+  
       // Verificar si el producto ya está en el carrito
       const productIndex = cart.products.findIndex((item) => item.product.toString() === pid);
-
+  
       if (productIndex !== -1) {
         // Si el producto ya está en el carrito, aumentar la cantidad
         cart.products[productIndex].quantity += parseInt(quantity);
+        // Actualizar el precio sumando el nuevo precio (price * quantity) al precio existente en el carrito
+        cart.products[productIndex].price += product.price * parseInt(quantity);
       } else {
-        // Si el producto no está en el carrito, agregarlo con la cantidad especificada
+        // Si el producto no está en el carrito, agregarlo con la cantidad especificada y el precio del producto multiplicado por la cantidad
         cart.products.push({
           product: pid,
           quantity: parseInt(quantity),
-          price: 0, // Aquí, podrías buscar el precio del producto de la base de datos y asignarlo
+          price: product.price * parseInt(quantity),
         });
       }
-
+  
       // Guardar el carrito actualizado
       const updatedCart = await cart.save();
-
+  
       return updatedCart;
     } catch (error) {
       console.log(
@@ -102,6 +111,7 @@ class CartsManager {
       );
     }
   };
+  
 
   deleteCart = async (req) => {
     try {
@@ -137,63 +147,89 @@ class CartsManager {
     }
   };
 
-  purchaseCart = async (req) => {
-    try {
-      const { cid } = req.params;
-      const cart = await cartsModel.findById(cid).populate('products.product');
-
-      if (!cart) {
-        throw new Error("Cart not found");
+  getProductsFromCart = async (cart) => {
+    const products = [];
+    for (const item of cart.products) {
+      const product = await productsModel.findById(item.product._id);
+      if (!product) {
+        throw new Error(`Product with id ${item.product._id} not found`);
       }
-
-      let insufficientStockProducts = [];
-      let purchasedProducts = [];
-
-      for (let item of cart.products) {
-        const product = await productsModel.findById(item.product._id);
-
-        if (product.stock >= item.quantity) {
-          product.stock -= item.quantity;
-          await product.save();
-          purchasedProducts.push(item);
-        } else {
-          insufficientStockProducts.push(item);
-        }
-      }
-
-      const ticketsManager = new TicketsManager();
-      const newTicket = await ticketsManager.createTickets({
-        body: {
-          amount: purchasedProducts.reduce((acc, item) => acc + (item.price * item.quantity), 0),
-          purchaser: req.session.user._id,
-          products: purchasedProducts.map(item => ({
-            product: item.product._id,
-            quantity: item.quantity,
-            price: item.price,
-          })),
-        },
-      });
-
-      if (!newTicket) {
-        throw new Error("Failed to create a ticket");
-      }
-
-      cart.products = insufficientStockProducts;
-      const updatedCart = await cart.save();
-
-      return {
-        updatedCart,
-        newTicket,
-        insufficientStockProducts: insufficientStockProducts.map(item => item.product._id),
-      };
-    } catch (error) {
-      console.log(
-        "🚀 ~ file: carts.service.js ~ CartsManager ~ purchaseCart= ~ error:",
-        error
-      );
+      products.push({ product, quantity: item.quantity, price: item.product.price });
     }
+    return products;
   };
 
+purchaseCart = async (req) => {
+  try {
+    const { cid } = req.params;
+    const cart = await cartsModel.findById(cid).populate('products.product');
+    console.log("🚀 ~ file: carts.service.js:166 ~ CartsManager ~ purchaseCart= ~ cart:", cart)
+
+    if (!cart) {
+      throw new Error("Cart not found");
+    }
+    let insufficientStockProducts = [];
+    let purchasedProducts = [];
+
+    for (let item of cart.products) {
+      const product = await productsModel.findById(item.product._id);
+      console.log("🚀 ~ file: carts.service.js:175 ~ CartsManager ~ purchaseCart= ~ product:", product)
+
+      if (product.stock >= item.quantity) {
+        product.stock -= item.quantity;
+        await product.save();
+        purchasedProducts.push(item);
+      } else {
+        insufficientStockProducts.push(item);
+      }
+    }
+
+    // Obtén los productos del carrito de compras
+    purchasedProducts = await this.getProductsFromCart(cart);
+    console.log("🚀 ~ file: carts.service.js:188 ~ CartsManager ~ purchaseCart= ~ purchasedProducts:", purchasedProducts)
+
+    // Calcula el monto total de la compra
+    const amount = purchasedProducts.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+    console.log("🚀 ~ file: carts.service.js:192 ~ CartsManager ~ purchaseCart= ~ amount:", amount)
+
+    // Crea un array de productos para el ticket
+    const ticketProducts = purchasedProducts.map(item => ({
+      product: item.product._id,
+      quantity: item.quantity,
+      price: item.price,
+    }));
+
+    const { email } = req.session.user;
+    const user = await findUserByEmail(email);
+    console.log("🚀 ~ file: carts.service.js:192 ~ CartsManager ~ purchaseCart= ~ user:", user)
+
+        
+        const ticketAdd = { amount: amount, purchaser: user._id, products: ticketProducts };
+        const newTicket = await ticketModel.create(ticketAdd);
+        console.log("🚀 ~ file: tickets.service.js:41 ~ TicketManager ~ createTickets= ~ newTicket:", newTicket)
+
+ 
+
+    console.log("🚀 ~ newTicket:", newTicket);
+
+    if (!newTicket) {
+      throw new Error("Failed to create a ticket");
+    }
+
+    cart.products = insufficientStockProducts;
+    const updatedCart = await cart.save();
+
+    return {
+      updatedCart,
+      newTicket,
+      insufficientStockProducts: insufficientStockProducts.map(item => item.product._id),
+    };
+  } catch (error) {
+    console.log("🚀 ~ file: carts.service.js ~ CartsManager ~ purchaseCart= ~ error:", error);
+  }
+};
+
+  
   CartsAgregate = async (cid,pid) => {
 
     try {

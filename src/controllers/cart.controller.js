@@ -88,6 +88,10 @@ class CartCtrl {
   
   purchaseCart = async (req, res) => {
     try {
+        console.log("User object in session:", req.session.user);
+
+        
+
       const result = await this.cartsManager.purchaseCart(req);
 
       if (!result || !result.updatedCart || !result.newTicket) {

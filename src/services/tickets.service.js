@@ -30,16 +30,15 @@ class TicketManager {
     createTickets = async (req, res) => {
       try {
         console.log("BODY Service****", req.body);
-     
-        const { amount, purchaser } = req.body;
-       
-        
-        const ticketAdd = { amount, purchaser  };
+    
+        const { amount, purchaser, products } = req.body;
+    
+        const ticketAdd = { amount, purchaser, products };
         const newTicket = await ticketModel.create(ticketAdd);
         console.log("🚀 ~ file: tickets.service.js:41 ~ TicketManager ~ createTickets= ~ newTicket:", newTicket)
-        
+    
         return newTicket;
-  
+    
       } catch (error) {
         console.log(
           "🚀 ~ file: tickets.service.js:47 ~ TicketManager ~ createTickets= ~ error:",
@@ -47,6 +46,8 @@ class TicketManager {
         );
       }
     };
+    
+    
   
   
     deleteTicket = async (req, res) => {
