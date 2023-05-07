@@ -2,9 +2,11 @@ const CartsManager = require("../services/carts.service");
 const cartsModel= require('../models/carts.model');
 const EmailRoutes = require("../routes/email.routes");
 const { EMAIL, PSW_EMAIL } = require("../config/config");
+const Mustache = require("mustache");
 
 
-const emailRoutes = new EmailRoutes();
+
+const emailRoutesInstance = new EmailRoutes();
 
 
 
@@ -127,19 +129,20 @@ class CartCtrl {
       // Render the email template with the purchase data
       const template = Mustache.render(emailOptions.html, {
         name: req.session.user.name,
-        items: result.updatedCart.items.map(item => ({
+        items: result.updatedCart && result.updatedCart.items ? result.updatedCart.items.map(item => ({
           name: item.product.name,
           quantity: item.quantity,
           price: item.product.price
-        })),
-        total: result.updatedCart.total.toFixed(2)
+        })) : [],
+        total: result.updatedCart && result.updatedCart.total ? result.updatedCart.total.toFixed(2) : "0.00"
       });
+      
       
       // Update the emailOptions with the rendered template
       emailOptions.html = template;
       
       // Send the email
-      await emailRoutes.sendEmail(emailOptions);
+      await emailRoutesInstance.sendEmail(emailOptions);
       
 
       return res.status(200).json({

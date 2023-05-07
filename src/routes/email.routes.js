@@ -14,6 +14,7 @@ const transporter = nodemailer.createTransport({
     },
   });
   
+  
 
 class EmailRoutes {
     path = "/email";
@@ -23,9 +24,22 @@ class EmailRoutes {
     constructor() {
       this.initEmailRoutes();
     }
+
+      // Define la función sendEmail
+  async sendEmail(emailOptions) {
+    try {
+      const result = await transporter.sendMail(emailOptions);
+      return result;
+    } catch (error) {
+      console.error("Error al enviar el correo electrónico:", error);
+      throw error;
+    }
+  }
   
     initEmailRoutes() {
   
+
+          
 
 this.router.post(`${this.path}/send`, async (req, res) => {
  
@@ -128,5 +142,6 @@ this.router.post(`${this.path}/send`, async (req, res) => {
 
 }
 }
+
 
 module.exports = EmailRoutes;
