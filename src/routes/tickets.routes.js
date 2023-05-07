@@ -23,13 +23,13 @@ class ticketsRoutes {
 
     this.router.get(`${this.path}/`, handlePolicies(["public"]), ticketCtrl.getAllTickets);
 
-    this.router.get(`${this.path}/:ticketId`, handlePolicies(["public"]), ticketCtrl.getTicketById);
+    this.router.get(`${this.path}/:ticketId`, handlePolicies(["user"]), ticketCtrl.getTicketById);
 
-    this.router.post(`${this.path}/`, handlePolicies(["public"]), ticketCtrl.createTickets);
+    this.router.post(`${this.path}/`, handlePolicies(["user"]), ticketCtrl.createTickets);
 
-    this.router.delete(`${this.path}/:ticketId`, handlePolicies(["public"]), ticketCtrl.deleteTicket);
+    this.router.delete(`${this.path}/:ticketId`, handlePolicies(["admin"]), ticketCtrl.deleteTicket);
 
-    this.router.put(`${this.path}/:ticketId`, handlePolicies(["public"]), ticketCtrl.updateTicket);
+    this.router.put(`${this.path}/:ticketId`, handlePolicies(["admin"]), ticketCtrl.updateTicket);
 
 
     }

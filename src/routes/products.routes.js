@@ -24,13 +24,13 @@ class ProductsRoutes {
 
     this.router.get(`${this.path}/`, handlePolicies(["public"]), productCtrl.getAllProducts);
 
-    this.router.get(`${this.path}/:productsId`, handlePolicies(["public"]), productCtrl.getProductsById);
+    this.router.get(`${this.path}/:productsId`, handlePolicies(["user"]), productCtrl.getProductsById);
 
-    this.router.post(`${this.path}/`, handlePolicies(["public"]), productCtrl.createProducts);
+    this.router.post(`${this.path}/`, handlePolicies(["admin"]), productCtrl.createProducts);
 
-    this.router.delete(`${this.path}/:productsId`, handlePolicies(["public"]), productCtrl.deleteProducts);
+    this.router.delete(`${this.path}/:productsId`, handlePolicies(["admin"]), productCtrl.deleteProducts);
 
-    this.router.put(`${this.path}/:productsId`, handlePolicies(["public"]), productCtrl.updateProducts);
+    this.router.put(`${this.path}/:productsId`, handlePolicies(["admin"]), productCtrl.updateProducts);
 
     // this.router.get(`${this.path}/insertion`, async (req, res) => {
     //   try {

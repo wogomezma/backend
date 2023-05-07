@@ -21,13 +21,13 @@ class usersRoutes {
                 
         this.router.get(`${this.path}/`, handlePolicies(["public"]), userCtrl.getAllUsers);
           
-          this.router.get(`${this.path}/:userId`, handlePolicies(["public"]), userCtrl.getUserById);
+          this.router.get(`${this.path}/:userId`, handlePolicies(["user"]), userCtrl.getUserById);
           
-          this.router.post(`${this.path}/`, handlePolicies(["public"]), userCtrl.createUser);
+          this.router.post(`${this.path}/`, handlePolicies(["user"]), userCtrl.createUser);
 
-          this.router.delete(`${this.path}/:userId`, handlePolicies(["public"]), userCtrl.deleteUser);
+          this.router.delete(`${this.path}/:userId`, handlePolicies(["admin"]), userCtrl.deleteUser);
 
-          this.router.put(`${this.path}/:userId`, handlePolicies(["public"]), userCtrl.updateUser);
+          this.router.put(`${this.path}/:userId`, handlePolicies(["user"]), userCtrl.updateUser);
 
           // this.router.delete(`${this.path}/:userId`, handlePolicies(["admin"]), async (req, res) => {
           //   const deleteUser = await userModel.deleteOne({ _id: req.params.userId });
