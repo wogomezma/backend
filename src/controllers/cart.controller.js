@@ -1,5 +1,12 @@
 const CartsManager = require("../services/carts.service");
 const cartsModel= require('../models/carts.model');
+const EmailRoutes = require("../routes/email.routes");
+const { EMAIL, PSW_EMAIL } = require("../config/config");
+
+
+const emailRoutes = new EmailRoutes();
+
+
 
 class CartCtrl {
     cartsManager;
@@ -97,6 +104,43 @@ class CartCtrl {
       if (!result || !result.updatedCart || !result.newTicket) {
         return res.status(500).json({ message: "Purchase failed" });
       }
+
+      const emailOptions = {
+        from: EMAIL,
+        to: req.session.user.email,
+        subject: "Purchase Confirmation",
+        html: `
+          <h2>Purchase Confirmation</h2>
+          <p>Hi {{name}},</p>
+          <p>Your purchase has been completed successfully.</p>
+          <p>Here is a summary of your purchase:</p>
+          <ul>
+            {{#items}}
+            <li>{{name}} - {{quantity}} x {{price}}</li>
+            {{/items}}
+          </ul>
+          <p>Total: {{total}}</p>
+          <p>Thank you for shopping with us!</p>
+        `
+      };
+      
+      // Render the email template with the purchase data
+      const template = Mustache.render(emailOptions.html, {
+        name: req.session.user.name,
+        items: result.updatedCart.items.map(item => ({
+          name: item.product.name,
+          quantity: item.quantity,
+          price: item.product.price
+        })),
+        total: result.updatedCart.total.toFixed(2)
+      });
+      
+      // Update the emailOptions with the rendered template
+      emailOptions.html = template;
+      
+      // Send the email
+      await emailRoutes.sendEmail(emailOptions);
+      
 
       return res.status(200).json({
         message: `Purchase completed successfully`,
