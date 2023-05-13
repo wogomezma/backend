@@ -23,7 +23,7 @@ class CartsRoutes {
    
     this.router.get(`${this.path}/`, handlePolicies(["public"]), cartCtrl.getAllCarts);
 
-    this.router.get(`${this.path}/:cid`, handlePolicies(["user"]), cartCtrl.getCartById);
+    this.router.get(`${this.path}/:cid`, handlePolicies(["public"]), cartCtrl.getCartById);
 
     this.router.post(`${this.path}/`, handlePolicies(["user"]), cartCtrl.createCart);
 

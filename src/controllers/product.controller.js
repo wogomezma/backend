@@ -1,5 +1,8 @@
 const ProductsManager = require("../services/products.service");
 const { productsModel, findUserByCode, } = require('../models/products.model');
+const { EnumErrors, HttpResponses } = require("../middleware/error-handle");
+
+const httpResp = new HttpResponses();
 
 class ProductCtrl {
     productManager;
@@ -43,18 +46,36 @@ class ProductCtrl {
 
   getProductsById = async (req, res) => {
     try {
+
+      if (!req.params.productsId || isNaN(req.params.productsId) || req.params.productsId < 0) {
+        return httpResp.BadRequest(
+          res,
+          `${EnumErrors.INVALID_PARAMS} - Invalid Params for productsId `
+        );
+      }
+
+
       const productsDetail = await this.productManager.getProductsById(req, res);
       
-      if (!productsDetail) {
-        res.json({ message: `this products does not exist` });
-      } else {
-        return res.json({
-          message: `get products info successfully`,
-          products: productsDetail,
-        });
-      }
+      // if (!productsDetail) {
+      //   res.json({ message: `this products does not exist` });
+      // } else {
+      //   return res.json({
+      //     message: `get products info successfully`,
+      //     products: productsDetail,
+      //   });
+      // }
+
+      return res.json({
+        message: `get products info successfully`,
+        products: productsDetail,
+      });
+
     } catch (error) {
-      return res.status(500).json({ messagegetProductsById: error.message });
+      return httpResp.Error(
+        res,
+        `${EnumErrors.DATABASE_ERROR} - ERROR DB ${error} `
+      );
     }
   };
   
@@ -63,17 +84,82 @@ class ProductCtrl {
   createProducts = async (req, res) => {
     try {
         console.log("BODY en Controller ****", req.body);
+
+       
+        let { name, description, price, code, stock, thumbnail } = req.body;
+
+        // Lista de campos requeridos y sus tipos
+        const requiredFields = {
+          name: 'String',
+          description: 'String',
+          price: 'Number',
+          code: 'String',
+          stock: 'Number',
+          thumbnail: 'String'
+        };
+
+        // Lista para almacenar los campos que faltan
+        let missingFields = [];
+
+        if (!name) {
+          missingFields.push('name');
+        }
+
+        if (!description) {
+          missingFields.push('description');
+        }
+
+        if (!price) {
+          missingFields.push('price');
+        }
+
+        if (!code) {
+          missingFields.push('code');
+        }
+
+        if (!stock) {
+          missingFields.push('stock');
+        }
+
+        if (!thumbnail) {
+          missingFields.push('thumbnail');
+        }
+
+        // Si faltan campos, enviamos un error personalizado
+        if (missingFields.length > 0) {
+          let errorMsg = 'Missing required fields: ';
+
+          missingFields.forEach(field => {
+            errorMsg += `\n - ${field} (${requiredFields[field]})`;
+          });
+
+          console.log(errorMsg);
+          return httpResp.BadRequest(
+            res,
+            `${EnumErrors.INVALID_PARAMS} - ${errorMsg} is required`
+          );
+        }
+
+
+
+        
         const productcode = req.body.code;
         const existingProduct = await findUserByCode(productcode);
     
         if (existingProduct) {
-          return res.status(400).json({ message: "Product already exists" });
+          return httpResp.Error(
+            res,
+            `${EnumErrors.PRODUCT_DUPLICATED} - PRODUCT DUPLICATED ${error} `
+          );
         }
     
         const newProducts = await this.productManager.createProducts(req);
     
         if (!newProducts) {
-          return res.status(500).json({ message: "Products creation failed" });
+          return httpResp.BadRequest(
+            res,
+            `${EnumErrors.CREATE_PRODUCT_ERROR} - INVALID PARAMS ${error} `
+          );
         }
     
         return res.status(201).json({
@@ -82,8 +168,12 @@ class ProductCtrl {
         });
           
       } catch (error) {
-        return res.status(500).json({ messagecreateproducts: error.message });
+        return httpResp.Error(
+          res,
+          `${EnumErrors.CREATE_PRODUCT_ERROR} - INVALID PARAMS ${error} `
+        );
       }
+      
   };
 
   deleteProducts = async (req, res) => {

@@ -2,6 +2,9 @@ const { userModel, findUserByEmail } = require('../models/user.model');
 const cartsModel = require("../models/carts.model");
 const { generateJWT } = require("../utils/jwt");
 const { createHashValue, isValidPasswd } = require("../utils/encrypt");
+const { EnumErrors, HttpResponses } = require("../middleware/error-handle");
+
+const httpResp = new HttpResponses();
 
 class UserManager {
   constructor() {}
@@ -18,6 +21,9 @@ class UserManager {
 
   getUserById = async (req, res) => {
     try {
+
+
+
       const user = await userModel.findById({ _id: req.params.userId });
       return user;
     } catch (error) {

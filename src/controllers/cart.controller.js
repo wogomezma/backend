@@ -3,7 +3,9 @@ const cartsModel= require('../models/carts.model');
 const EmailRoutes = require("../routes/email.routes");
 const { EMAIL, PSW_EMAIL } = require("../config/config");
 const Mustache = require("mustache");
+const { EnumErrors, HttpResponses } = require("../middleware/error-handle");
 
+const httpResp = new HttpResponses();
 
 
 const emailRoutesInstance = new EmailRoutes();
@@ -28,13 +30,24 @@ class CartCtrl {
 
   getCartById = async (req, res) => {
     try {
+
+      if (!req.params.cid|| isNaN(req.params.cid) || req.params.cid < 0) {
+        return httpResp.BadRequest(
+          res,
+          `${EnumErrors.INVALID_PARAMS} - Invalid Params for Cartsid `
+        );
+      }
+
       const cart = await this.cartsManager.getCartById(req, res);
       if (!cart) {
         res.json({ message: `this cart does not exist` });
       }
       return res.json({ message: `getCartById`, cart });
     } catch (error) {
-      return res.status(500).json({ message: error.message });
+      return httpResp.Error(
+        res,
+        `${EnumErrors.DATABASE_ERROR} - ERROR DB ${error} `
+      );
     }
   };
 

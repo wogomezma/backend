@@ -1,11 +1,16 @@
 const UserManager = require("../services/user.service");
 const UsersMenManager = require("../services/user-men.service");
 const { userModel, findUserByEmail } = require('../models/user.model');
+const { EnumErrors, HttpResponses } = require("../middleware/error-handle");
+
+const httpResp = new HttpResponses();
 
 class UserCtrl {
     userManager;
+
   constructor() {
     this.userManager = new UserManager();
+
     // SW a Memoria
     // this.userManager = new UsersMenManager();
   }
@@ -22,13 +27,26 @@ class UserCtrl {
 
   getUserById = async (req, res) => {
     try {
-      const user = await this.userManager.getUserById(req, res);
-      if (!user) {
-        res.json({ message: `this users does not exist` });
+
+      if (!req.params.userId || isNaN(req.params.userId) || req.params.userId < 0) {
+        return httpResp.BadRequest(
+          res,
+          `${EnumErrors.INVALID_PARAMS} - Invalid Params for userId `
+        );
       }
+
+
+      // const user = await this.userManager.getUserById(req, res);
+      // if (!user) {
+      //  return res.json({ message: `this users does not exist` });
+      // }
+
       return res.json({ message: `getUserById`, user });
     } catch (error) {
-      return res.status(500).json({ message: error.message });
+      return httpResp.Error(
+        res,
+        `${EnumErrors.DATABASE_ERROR} - ERROR DB ${error} `
+      );
     }
   };
 
@@ -61,9 +79,18 @@ class UserCtrl {
 
   deleteUser = async (req, res) => {
     try {
+
+
+      if (!req.params.userId || isNaN(req.params.userId) || req.params.userId < 0) {
+        return httpResp.BadRequest(
+          res,
+          `${EnumErrors.INVALID_PARAMS} - Invalid Params for userId `
+        );
+      }
+
         const deleteUserById = await this.userManager.deleteUser(req, res);
         if (!deleteUserById) {
-          res.json({ message: `this users does not exist` });
+          return res.json({ message: `this users does not exist` });
         }
         return res.json({
             message: `deleteUserById with ROLE ADMIN`,
@@ -78,6 +105,13 @@ class UserCtrl {
   updateUser = async (req, res) => {
     try {
       const updatedUser = await this.userManager.updateUser(req, res);
+
+      if (!req.params.userId || isNaN(req.params.userId) || req.params.userId < 0) {
+        return httpResp.BadRequest(
+          res,
+          `${EnumErrors.INVALID_PARAMS} - Invalid Params for userId `
+        );
+      }
   
       if (!updatedUser) {
         return res.status(404).json({ message: "User not found" });

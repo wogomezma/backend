@@ -7,6 +7,7 @@ const SessionRoutes = require("./routes/session.routes");
 const usersRoutes = require("./routes/user.routes");
 const ticketsRoutes = require("./routes/tickets.routes");
 const EmailRoutes = require("./routes/email.routes");
+const MocksRoutes = require("./routes/mocks.routes");
 
 
 const app = new App([
@@ -18,6 +19,7 @@ const app = new App([
   new usersRoutes(),
   new ticketsRoutes(),
   new EmailRoutes(),
+  new MocksRoutes(),
 ]);
 
 app.listen();

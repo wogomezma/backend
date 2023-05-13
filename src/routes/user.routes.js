@@ -21,7 +21,7 @@ class usersRoutes {
                 
         this.router.get(`${this.path}/`, handlePolicies(["public"]), userCtrl.getAllUsers);
           
-          this.router.get(`${this.path}/:userId`, handlePolicies(["user"]), userCtrl.getUserById);
+          this.router.get(`${this.path}/:userId`, handlePolicies(["public"]), userCtrl.getUserById);
           
           this.router.post(`${this.path}/`, handlePolicies(["user"]), userCtrl.createUser);
 
