@@ -18,7 +18,9 @@ const mongoStore = require("connect-mongo");
 const authMdw = require("./middleware/auth.middleware");
 const passport = require('passport');
 const initializePassport = require("./config/passport.config");
-const usersRoutes = require("./routes/user.routes");
+const setLogger = require("./utils/logger");
+const useLogger = require("./utils/logger-basic");
+
 
 const API_VERSION = "v1";
 
@@ -65,6 +67,8 @@ class App {
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use("/static", express.static(`${__dirname}/public`));
     this.app.use(cookieParser());
+    this.app.use(setLogger);
+    //this.app.use(useLogger);
     this.app.use(
       session({
         store: mongoStore.create({

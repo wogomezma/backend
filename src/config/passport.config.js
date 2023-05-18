@@ -20,6 +20,9 @@ const initializePassport = () => {
         proxy: true,
       scope: ['user:email'] //This is all it takes to get emails
       },
+        // console.log("🚀 ~ file: passport.config.js:23 ~ initializePassport ~ GITHUB_CLIENT_SECRET:", GITHUB_CLIENT_SECRET),
+        // console.log("🚀 ~ file: passport.config.js:24 ~ initializePassport ~ GITHUB_CLIENT_ID:", GITHUB_CLIENT_ID),
+        
       async (accessToken, refreshToken, profile, done) => {
         try {
           console.log("PROFILE INFO:", profile);

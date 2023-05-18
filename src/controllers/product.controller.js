@@ -1,6 +1,10 @@
 const ProductsManager = require("../services/products.service");
 const { productsModel, findUserByCode, } = require('../models/products.model');
 const { EnumErrors, HttpResponses } = require("../middleware/error-handle");
+const setLogger = require('../utils/logger');
+const express = require('express');
+const app = express();
+app.use(setLogger);
 
 const httpResp = new HttpResponses();
 
@@ -46,39 +50,35 @@ class ProductCtrl {
 
   getProductsById = async (req, res) => {
     try {
-
       if (!req.params.productsId || isNaN(req.params.productsId) || req.params.productsId < 0) {
+        req.logger.debug(`Invalid Params for productsId: ${req.params.productsId}`);
         return httpResp.BadRequest(
           res,
           `${EnumErrors.INVALID_PARAMS} - Invalid Params for productsId `
         );
       }
-
-
+      
       const productsDetail = await this.productManager.getProductsById(req, res);
       
-      // if (!productsDetail) {
-      //   res.json({ message: `this products does not exist` });
-      // } else {
-      //   return res.json({
-      //     message: `get products info successfully`,
-      //     products: productsDetail,
-      //   });
-      // }
-
+      // You can also log the success case
+      req.logger.debug(`Products info fetched successfully: ${JSON.stringify(productsDetail)}`);
+      
       return res.json({
         message: `get products info successfully`,
         products: productsDetail,
       });
 
     } catch (error) {
+      // log the error with the 'debug' level
+      req.logger.debug(`Error while fetching products info: ${error}`);
+      
       return httpResp.Error(
         res,
         `${EnumErrors.DATABASE_ERROR} - ERROR DB ${error} `
       );
     }
-  };
-  
+};
+
 
 
   createProducts = async (req, res) => {
@@ -132,8 +132,9 @@ class ProductCtrl {
           missingFields.forEach(field => {
             errorMsg += `\n - ${field} (${requiredFields[field]})`;
           });
-
+          
           console.log(errorMsg);
+          req.logger.http(`Error with GET /${errorMsg}/`);
           return httpResp.BadRequest(
             res,
             `${EnumErrors.INVALID_PARAMS} - ${errorMsg} is required`
@@ -193,6 +194,7 @@ class ProductCtrl {
   };
 
   
+  
   updateProducts = async (req, res) => {
     try {
       const updatedProduct = await this.productManager.updateProduct(req, res);
@@ -210,6 +212,8 @@ class ProductCtrl {
     }
   };
   
+
+
 
 }
 

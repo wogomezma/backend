@@ -1,0 +1,12 @@
+{"level":"debug","message":"Test debug message"}
+{"level":"http","message":"Test http message"}
+{"level":"info","message":"Test info message"}
+{"level":"warning","message":"Test warning message"}
+{"level":"error","message":"Test error message"}
+{"level":"debug","message":"Test debug message"}
+{"level":"http","message":"Test http message"}
+{"level":"info","message":"Test info message"}
+{"level":"warning","message":"Test warning message"}
+{"level":"error","message":"Test error message"}
+{"level":"http","message":"Error with GET /Missing required fields: \n - name (String)\n - price (Number)/"}
+{"level":"debug","message":"Invalid Params for productsId: -1"}

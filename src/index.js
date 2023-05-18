@@ -8,6 +8,7 @@ const usersRoutes = require("./routes/user.routes");
 const ticketsRoutes = require("./routes/tickets.routes");
 const EmailRoutes = require("./routes/email.routes");
 const MocksRoutes = require("./routes/mocks.routes");
+const ErrorsRoutes = require("./routes/error.routes");
 
 
 const app = new App([
@@ -20,6 +21,7 @@ const app = new App([
   new ticketsRoutes(),
   new EmailRoutes(),
   new MocksRoutes(),
+  new ErrorsRoutes()
 ]);
 
 app.listen();
