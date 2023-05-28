@@ -1,3 +1,72 @@
+{{!-- <!DOCTYPE html>
+<html>
+<head>
+	<title>Inicio de Sesión</title>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
+	<style type="text/css">
+		body {
+			background-color: #FCD116; /*amarillo*/
+		}
+		h1 {
+			color: #003893; /*azul oscuro*/
+		}
+		form {
+			background-color: #FFFFFF; /*blanco*/
+			padding: 20px;
+			border-radius: 5px;
+			width: 300px;
+			margin: auto;
+			margin-top: 50px;
+		}
+		input[type="text"], input[type="password"] {
+			width: 100%;
+			padding: 12px 20px;
+			margin: 8px 0;
+			box-sizing: border-box;
+			border: 2px solid #003893; /*azul oscuro*/
+			border-radius: 4px;
+		}
+		.custom-button {
+			background-color: #CE1126; /*rojo*/
+			color: white;
+			padding: 12px 20px;
+			margin-top: 10px;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+			text-decoration: none;
+			display: inline-block;
+			font-size: 16px;
+		}
+		.custom-button:hover {
+			background-color: #9E0B15; /*rojo oscuro*/
+		}
+		.button-container {
+			display: inline-block;
+		}
+	</style>
+</head>
+<body>
+    <div class="container"></div>
+	<h1>Iniciar Sesión</h1>
+	<form id="login-form" method="post" action="/api/v1/session/login">
+		<label for="email">Email:</label><br>
+		<input type="text" id="email" name="email"><br>
+		<label for="password">Contraseña:</label><br>
+		<input type="password" id="password" name="password"><br>
+		<div class="button-container">
+			<input class="custom-button" type="submit" value="Iniciar Sesión">
+			<a class="custom-button" href="/api/v1/session/github" role="button">Entrar con GITHUB</a>
+		</div>
+	</form>
+    <p>Don't have an account? <a href="/api/v1/views/register">Register here</a>.</p>
+	</div>
+	<section><h1>{{error}}<h1></section>
+</body>
+</html> --}}
+
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -58,6 +127,7 @@
 		<div class="button-container">
 			<input class="custom-button" type="submit" value="Iniciar Sesión">
 			<a class="custom-button" href="/api/v1/session/github" role="button">Entrar con GITHUB</a>
+			<a class="custom-button" href="/api/v1/views/sendrecovery" role="button">Recuperar contraseña</a>
 		</div>
 	</form>
     <p>Don't have an account? <a href="/api/v1/views/register">Register here</a>.</p>

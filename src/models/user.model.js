@@ -6,6 +6,7 @@ const roleType = {
   USER: "user",
   ADMIN: "admin",
   PUBLIC: "public",
+  PREMIUM: "premium",
 };
 
 const schema = new mongoose.Schema({

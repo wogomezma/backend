@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+{{!-- <!DOCTYPE html>
 <html>
 <head>
 	<title>Recuperacion de Password</title>
@@ -56,6 +56,96 @@
         <span id="password-match"></span>
 		<p class="error-message" id="error-message"></p>
 
+		<input type="submit">
+	</form>
+
+    <script>
+        function checkPasswordMatch() {
+        var password = document.getElementById("password");
+        var confirm_password = document.getElementById("confirm-password");
+        var password_match = document.getElementById("password-match");
+
+        if (password.value != confirm_password.value) {
+            password_match.innerHTML = "Passwords do not match!";
+            confirm_password.setCustomValidity("Passwords do not match");
+        } else {
+            password_match.innerHTML = "";
+            confirm_password.setCustomValidity("");
+        }
+        }
+    </script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<script id="user-template" type="text/x-handlebars-template">
+		<h2>Thank you for registering, {{name}}!</h2>
+		<p>Your registration details:</p>
+		<ul>
+			<li>Email: {{email}}</li>
+		</ul>
+	</script>
+	<script src="update.js"></script>
+</body>
+</html> --}}
+
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Recuperacion de Password</title>
+	<style>
+		body {
+			background-color: #FCD116;
+		}
+		#form {
+			background-color: #003893;
+			color: #FFFFFF;
+			padding: 20px;
+			margin: 50px auto;
+			width: 400px;
+			border-radius: 10px;
+		}
+		input[type="text"],
+		input[type="email"],
+		input[type="password"] {
+			width: 100%;
+			padding: 12px 20px;
+			margin: 8px 0;
+			box-sizing: border-box;
+			border: none;
+			border-radius: 4px;
+			background-color: #FFFFFF;
+			color: #000000;
+		}
+		input[type="submit"] {
+			background-color: #FCD116;
+			color: #000000;
+			padding: 12px 20px;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+			width: 100%;
+			margin-top: 10px;
+		}
+		.error-message {
+			color: red;
+			margin-top: 5px;
+		}
+	</style>
+</head>
+<body>
+    <H1>Recuperacion de Password</H1>
+    <form id="form" action="/api/v1/email/reset-password" method="post">
+		<label for="email">Email:</label>
+		<input type="email" id="email" name="email" required readonly value="{{email}}">
+
+        <label for="password">New Password:</label>
+        <input type="password" id="new_password" name="new_password" required minlength="8">
+
+        <label for="confirm-password">Confirm New Password:</label>
+        <input type="password" id="confirm-password" name="confirm-password" required minlength="8" oninput="checkPasswordMatch()">
+        <span id="password-match"></span>
+		<p class="error-message" id="error-message"></p>
+		<input type="hidden" id="token" name="token" value="{{token}}">
 		<input type="submit">
 	</form>
 

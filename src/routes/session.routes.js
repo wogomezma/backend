@@ -1,8 +1,8 @@
 const { Router } = require("express");
 const { find } = require("../models/user.model");
-const userModel = require("../models/user.model");
+const { userModel, findUserByEmail } = require('../models/user.model');
 const CartsManager = require("../services/carts.service");
-const productsModel = require("../models/products.model");
+const {productsModel} = require("../models/products.model");
 const passport = require("passport");
 const { createHashValue, isValidPasswd } = require("../utils/encrypt");
 const ROLES = require("../constantes/roles");

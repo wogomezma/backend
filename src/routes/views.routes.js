@@ -1,11 +1,14 @@
 const { Router } = require("express");
 const CartsManager = require("../services/carts.service");
 const ProductsManager = require("../services/products.service");
-const productsModel = require("../models/products.model");
+const {productsModel} = require("../models/products.model");
 const cartsModel = require("../models/carts.model");
 const checkAuthJwt = require("../middleware/auth-jwt.middleware")
 const rolhMdw = require("../middleware/rol.middleware")
 const handlePolicies = require("../middleware/handle-policies.middleware");
+const jwt = require('jsonwebtoken');
+const { SECRET_JWT } = require("../utils/jwt")
+
 
 class ViewsRoutes {
   path = "/views";
@@ -160,8 +163,40 @@ class ViewsRoutes {
   }
 });
 
-this.router.get(`${this.path}/recover`, async (req, res) => {
-  res.render("recover");
+this.router.get(`${this.path}/recover`, handlePolicies(["public"]), async (req, res) => {
+  const token = req.query[Object.keys(req.query)[0]];
+  console.log("Token:", token);
+  
+  try {
+    // Decodificar el token para obtener la información
+    const decodedToken = jwt.verify(token, SECRET_JWT);
+    const { user } = decodedToken;
+    const { email } = user;
+
+    // Renderizar la plantilla "recover" y pasar el correo electrónico como variable
+    res.render("recover", { email, token });
+  } catch (error) {
+    // Manejar el error si el token es inválido o ha expirado
+    console.log("Error:", error);
+    if (error.name === "TokenExpiredError") {
+      return res.render("sendrecovery");
+    }
+    res.status(400).json({ message: "Invalid or expired token" });
+  }
+});
+
+
+
+
+this.router.get(`${this.path}/sendrecovery`, handlePolicies(["public"]), async (req, res) => {
+    
+  try {
+   res.render("sendrecovery");
+  } catch (error) {
+    // Manejar el error si el token es inválido o ha expirado
+    console.log("Error:", error);
+    res.status(400).json({ message: error.message });
+  }
 });
 
   }

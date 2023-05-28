@@ -22,8 +22,6 @@ class UserManager {
   getUserById = async (req, res) => {
     try {
 
-
-
       const user = await userModel.findById({ _id: req.params.userId });
       return user;
     } catch (error) {
@@ -63,9 +61,8 @@ class UserManager {
       return res.status(500).json({ message: error.message });
     }
   };
-}
 
-updateUser = async (req, res) => {
+  updateUser = async (req, res) => {
     try {
       const { name, lastname, password } = req.body;
   
@@ -89,6 +86,76 @@ updateUser = async (req, res) => {
       );
     }
   };
+
+
+
+  updateRol = async (user) => {
+    console.log("🚀 ~ file: user.service.js:94 ~ updateRol= ~ user:", user)
+    try {
+      // Cambiar el rol del usuario
+      if (user.rol === "premium") {
+        
+        user.rol = "admin";
+        console.log("🚀 ~ file: user.service.js:101 ~ UserCtrl ~ changeToPremium= ~ user.role:", user.rol);
+      } else if (user.rol === "admin") {
+        user.rol = "premium";
+        console.log("🚀 ~ file: user.service.js:104 ~ UserCtrl ~ changeToPremium= ~ user.role:", user.rol);
+      }
+
+      const { _id, name, lastname, password, rol } = user;
+  
+      console.log("🚀 ~ file: user.service.js:97 ~ updateRol= ~ user:", user)
+      const updatedUser = await userModel.findByIdAndUpdate(
+        _id,
+        { $set: { name, lastname, password, rol } },
+        { new: true, runValidators: true }
+      );
+      console.log("🚀 ~ file: user.service.js:106 ~ updateRol= ~ updatedUser:", updatedUser);
+  
+      if (!updatedUser) {
+        throw new Error("User not found");
+      }
+  
+      return updatedUser;
+    } catch (error) {
+      console.log("🚀 ~ file: users.manager.js ~ UsersManager ~ updateUser= ~ error:", error);
+    }
+  };
+  
+  
+
+  resetPassword = async (req, res) => {
+    try {
+      const { email, password } = req.body;
+  
+      // Buscar el usuario por su dirección de correo electrónico
+      const user = await userModel.findOne({ email });
+  
+      // Verificar si el usuario existe
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+  
+      const hashedPassword = await createHashValue(password);
+
+      // Actualizar la contraseña del usuario con el valor proporcionado
+      user.password = await createHashValue(hashedPassword);
+  
+      // Guardar los cambios en la base de datos
+      await user.save();
+  
+      return res.status(200).json({ message: "Password reset successful" });
+    } catch (error) {
+      console.log("Error:", error);
+      return res.status(500).json({ message: error.message });
+    }
+  };
+
+
+}
+
+
+  
   
   
 module.exports = UserManager;

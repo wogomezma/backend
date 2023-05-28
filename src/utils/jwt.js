@@ -5,12 +5,13 @@ const SECRET_JWT = SECRET_JWT_ENV;
 
 const generateJWT = (user) => {
   return new Promise((resolve, reject) => {
-    jwt.sign({ user }, SECRET_JWT, { expiresIn: "30m" }, (err, token) => {
+    jwt.sign({ user }, SECRET_JWT, { expiresIn: "1h" }, (err, token) => {
       if (err) {
-        console.log(err);
-        reject("can not generate jwt token");
+        console.error(err);
+        reject("Error al generar el token JWT");
+      } else {
+        resolve(token);
       }
-      resolve(token);
     });
   });
 };

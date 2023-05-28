@@ -32,16 +32,36 @@ class ProductsManager {
   createProducts = async (req, res) => {
     try {
       console.log("BODY Service****", req.body);
-   
+  
       const { name, description, price, code, stock, thumbnail } = req.body;
-     
+  
+      const productAdd = { name, description, price, code, stock, thumbnail };
+      console.log("🚀 ~ file: products.service.js:39 ~ ProductsManager ~ createProducts= ~ productAdd:", productAdd)
+  
+      const currentUser = req.user;
+      console.log("🚀 ~ file: products.service.js:41 ~ ProductsManager ~ createProducts= ~ currentUser:", currentUser)
       
-      const productAdd = { name, description, price, code, stock, thumbnail  };
-      const newProducts = await productsModel.create(productAdd);
-      console.log("🚀 ~ file: products.service.js:41 ~ ProductsManager ~ createProducts= ~ newProducts:", newProducts)
-      
-      return newProducts;
+      const {user}=currentUser
+      console.log("🚀 ~ file: products.service.js:45 ~ ProductsManager ~ createProducts= ~ user:", user)
 
+      if (user.rol='premium') {
+        // Si el usuario es premium, establecer el campo "owner" en el correo electrónico del usuario
+        productAdd.owner = user.id;
+        console.log("🚀 ~ file: products.service.js:47 ~ ProductsManager ~ createProducts= ~ currentUser.id:", user.id)
+      } else {
+        // Si el usuario no es premium, establecer el campo "owner" en el valor predeterminado es el id del usuario admin
+        productAdd.owner = "6456bd9dfd56bf8da0524331";
+      }
+  
+      console.log("🚀 ~ file: products.service.js:52 ~ ProductsManager ~ createProducts= ~ productAdd:", productAdd)
+
+      const newProducts = await productsModel.create(productAdd);
+      console.log(
+        "🚀 ~ file: products.service.js:41 ~ ProductsManager ~ createProducts= ~ newProducts:",
+        newProducts
+      );
+  
+      return newProducts;
     } catch (error) {
       console.log(
         "🚀 ~ file: products.manager.js:47 ~ ProductsManager ~ createProducts= ~ error:",
@@ -49,17 +69,20 @@ class ProductsManager {
       );
     }
   };
+  
 
 
   deleteProduct = async (req, res) => {
     try {
+      
+        // Si el usuario no es premium, eliminar el producto sin verificar el propietario
         const deleteProductById = await productsModel.deleteOne({ _id: req.params.productsId });
         return deleteProductById;
     } catch (error) {
       return res.status(500).json({ message: error.message });
     }
   };
-
+  
   updateProduct = async (req, res) => {
     try {
       const { name, description, price, stock, thumbnail } = req.body;

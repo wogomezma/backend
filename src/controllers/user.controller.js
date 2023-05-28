@@ -27,19 +27,25 @@ class UserCtrl {
 
   getUserById = async (req, res) => {
     try {
-
-      if (!req.params.userId || isNaN(req.params.userId) || req.params.userId < 0) {
-        return httpResp.BadRequest(
-          res,
-          `${EnumErrors.INVALID_PARAMS} - Invalid Params for userId `
-        );
-      }
+      
+      console.log("🚀 ~ file: user.controller.js:31 ~ UserCtrl ~ getUserById= ~ req.params.userId:", req.params.userId)
 
 
-      // const user = await this.userManager.getUserById(req, res);
-      // if (!user) {
-      //  return res.json({ message: `this users does not exist` });
+      // if (!req.params.userId || isNaN(req.params.userId) || req.params.userId < 0) {
+      //   return httpResp.BadRequest(
+      //     res,
+      //     `${EnumErrors.INVALID_PARAMS} - Invalid Params for userId is 0 o menor`
+      //   );
       // }
+
+
+      const user = await this.userManager.getUserById(req, res);
+      console.log("🚀 ~ file: user.controller.js:43 ~ UserCtrl ~ getUserById= ~ user:", user)
+
+      
+      if (!user) {
+       return res.json({ message: `this users does not exist` });
+      }
 
       return res.json({ message: `getUserById`, user });
     } catch (error) {
@@ -126,7 +132,23 @@ class UserCtrl {
     }
   };
   
-
+  changeToPremium = async (req, res) => {
+    try {
+      const user = await this.userManager.getUserById(req, res);
+      console.log("🚀 ~ file: user.controller.js:138 ~ UserCtrl ~ changeToPremium= ~ user:", user)
+  
+  
+      const updatedRol = await this.userManager.updateRol(user);
+  
+      return res.status(200).json({
+        message: "User role updated successfully",
+        user: updatedRol,
+      });
+    } catch (error) {
+      console.log("🚀 ~ file: user.controller.js:148 ~ UserCtrl ~ changeToPremium= ~ error:", error)
+      return res.status(500).json({ message: "Error updating user role",error });
+    }
+  };
 
 }
 

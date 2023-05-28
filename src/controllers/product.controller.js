@@ -179,7 +179,29 @@ class ProductCtrl {
 
   deleteProducts = async (req, res) => {
     try {
-        const deleteProductsById = await this.productManager.deleteProduct(req, res);
+
+        const currentUser = req.user;
+        const { user } = currentUser;
+        const productsDetail = await productsModel.findById({ _id: req.params.productsId });
+        console.log("🚀 ~ file: product.controller.js:186 ~ ProductCtrl ~ deleteProducts ~ productsDetail:", productsDetail)
+        const { owner } = productsDetail;
+        const ownerId = owner.toString();
+  
+        console.log("🚀 ~ file: products.service.js:190 ~ ProductsManager ~ deleteProduct ~ owner:", ownerId,"and",user.id)
+    
+        if (user.rol === 'premium') {
+          // Si el usuario es premium, validar si es el propietario del producto
+          if (ownerId === user.id) {
+            const deleteProductById = await productsModel.deleteOne({ _id: req.params.productsId });
+            return deleteProductById;
+          } else {
+            return res.status(403).json({ message: "El producto no pertenece al usuario" });
+          }
+        }
+        
+          const deleteProductsById = await this.productManager.deleteProduct(req, res);
+
+
         if (!deleteProductsById) {
           res.json({ message: `this products does not exist` });
         }
@@ -189,7 +211,12 @@ class ProductCtrl {
             product: deleteProductsById,
           });
       } catch (error) {
-        return res.status(500).json({ messagedeleteproducts: error.message });
+        console.log(error);
+          req.logger.http(`Error al Borrar Producto /${error}/`);
+          return httpResp.BadRequest(
+            res,
+            `${EnumErrors.INVALID_PARAMS} - ${error}`
+          );
       }
   };
 

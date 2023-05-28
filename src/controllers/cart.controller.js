@@ -1,5 +1,6 @@
 const CartsManager = require("../services/carts.service");
 const cartsModel= require('../models/carts.model');
+const { productsModel, findUserByCode, } = require('../models/products.model');
 const EmailRoutes = require("../routes/email.routes");
 const { EMAIL, PSW_EMAIL } = require("../config/config");
 const Mustache = require("mustache");
@@ -90,10 +91,24 @@ class CartCtrl {
 
   updateCart = async (req, res) => {
     try {
+      const currentUser = req.user;
+      const { user } = currentUser;
+      const productsDetail = await productsModel.findById({ _id: req.params.cid});
+      console.log("🚀 ~ file: product.controller.js:186 ~ ProductCtrl ~ deleteProducts ~ productsDetail:", productsDetail)
+      const { owner } = productsDetail;
+      const ownerId = owner.toString();
+
+      console.log("🚀 ~ file: products.service.js:190 ~ ProductsManager ~ deleteProduct ~ owner:", ownerId,"and",user.id)
+  
+      if (user.rol === 'premium') {
+        // Si el usuario es premium, validar si es el propietario del producto
+        if (ownerId === user.id) {
+          return res.status(403).json({ message: "No puedes agregar a tu carrito un producto que te pertenece" });
+        }
+      }
+
       const updatedCart = await this.cartsManager.updateCart(req, res);
-
-
-      
+  
   
       if (!updatedCart) {
         return res.status(404).json({ message: "Cart not found" });
