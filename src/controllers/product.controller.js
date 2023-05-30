@@ -50,13 +50,13 @@ class ProductCtrl {
 
   getProductsById = async (req, res) => {
     try {
-      if (!req.params.productsId || isNaN(req.params.productsId) || req.params.productsId < 0) {
-        req.logger.debug(`Invalid Params for productsId: ${req.params.productsId}`);
-        return httpResp.BadRequest(
-          res,
-          `${EnumErrors.INVALID_PARAMS} - Invalid Params for productsId `
-        );
-      }
+      // if (!req.params.productsId || isNaN(req.params.productsId) || req.params.productsId < 0) {
+      //   req.logger.debug(`Invalid Params for productsId: ${req.params.productsId}`);
+      //   return httpResp.BadRequest(
+      //     res,
+      //     `${EnumErrors.INVALID_PARAMS} - Invalid Params for productsId `
+      //   );
+      // }
       
       const productsDetail = await this.productManager.getProductsById(req, res);
       

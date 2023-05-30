@@ -21,23 +21,16 @@ class usersRoutes {
                 
         this.router.get(`${this.path}/`, handlePolicies(["public"]), userCtrl.getAllUsers);
           
-          this.router.get(`${this.path}/:userId`, handlePolicies(["admin","premium"]), userCtrl.getUserById);
+          this.router.get(`${this.path}/:userId`, handlePolicies(["public"]), userCtrl.getUserById);
           
           this.router.post(`${this.path}/`, handlePolicies(["public"]), userCtrl.createUser);
 
-          this.router.delete(`${this.path}/:userId`, handlePolicies(["admin","premium"]), userCtrl.deleteUser);
+          this.router.delete(`${this.path}/:userId`, handlePolicies(["public"]), userCtrl.deleteUser);
 
-          this.router.put(`${this.path}/:userId`, handlePolicies(["user","admin","premium"]), userCtrl.updateUser);
+          this.router.put(`${this.path}/:userId`, handlePolicies(["public"]), userCtrl.updateUser);
 
-          this.router.post(`${this.path}/premium/:userId`, handlePolicies(["admin","premium"]), userCtrl.changeToPremium);
+          this.router.post(`${this.path}/premium/:userId`, handlePolicies(["public"]), userCtrl.changeToPremium);
 
-          // this.router.delete(`${this.path}/:userId`, handlePolicies(["admin"]), async (req, res) => {
-          //   const deleteUser = await userModel.deleteOne({ _id: req.params.userId });
-          //   return res.json({
-          //     message: `deleteUserById with ROLE ADMIN`,
-          //     user: deleteUser,
-          //   });
-          // });
 
   }
 }

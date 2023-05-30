@@ -10,22 +10,11 @@ const DocsSwaggerOptions = {
         version: "1.0.0",
       },
     },
-    apis: ["./src/docs/**/*.yml"], // Ruta al archivo YAML de productos
+    apis: ["./src/docs/**/*.yml"], 
   };
   
-//   const cartSwaggerOptions = {
-//     definition: {
-//       openapi: "3.0.0",
-//       info: {
-//         title: "Documentación del módulo de carrito",
-//         version: "1.0.0",
-//       },
-//     },
-//     apis: ["./src/docs/**/*.yml"], // Ruta al archivo YAML de carrito
-//   };
 
 const docsSpecs = swaggerJSDoc(DocsSwaggerOptions);
-// const cartSpecs = swaggerJSDoc(cartSwaggerOptions);
 
 class DocsRoutes {
   path = "/docs";
@@ -42,8 +31,6 @@ class DocsRoutes {
       swaggerUi.setup(docsSpecs)
     );
 
-    // this.router.use(`${this.path}/cart`, swaggerUi.serve);
-    // this.router.get(`${this.path}/cart`, swaggerUi.setup(cartSpecs));
   }
 }
 

@@ -19,6 +19,7 @@ class ProductsManager {
   getProductsById = async (req, res) => {
     try {
       const productsDetail = await productsModel.findById({ _id: req.params.productsId });
+      console.log("🚀 ~ file: products.service.js:22 ~ ProductsManager ~ getProductsById= ~ productsDetail:", productsDetail)
 
       return productsDetail;
     } catch (error) {
