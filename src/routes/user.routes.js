@@ -19,7 +19,7 @@ class usersRoutes {
     initusersRoutes() {
   
                 
-        this.router.get(`${this.path}/`, handlePolicies(["admin","premium"]), userCtrl.getAllUsers);
+        this.router.get(`${this.path}/`, handlePolicies(["public"]), userCtrl.getAllUsers);
           
           this.router.get(`${this.path}/:userId`, handlePolicies(["admin","premium"]), userCtrl.getUserById);
           

@@ -9,6 +9,7 @@ const ticketsRoutes = require("./routes/tickets.routes");
 const EmailRoutes = require("./routes/email.routes");
 const MocksRoutes = require("./routes/mocks.routes");
 const ErrorsRoutes = require("./routes/error.routes");
+const DocsRoutes = require("./routes/docs.router");
 
 
 const app = new App([
@@ -21,7 +22,8 @@ const app = new App([
   new ticketsRoutes(),
   new EmailRoutes(),
   new MocksRoutes(),
-  new ErrorsRoutes()
+  new ErrorsRoutes(),
+  new DocsRoutes()
 ]);
 
 app.listen();
