@@ -66,6 +66,5 @@ describe("Products Router", () => {
   });
 
   after(() => {
-    // Tareas de limpieza después de las pruebas
   });
 });

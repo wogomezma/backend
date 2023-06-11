@@ -35,7 +35,6 @@ describe("Session Router", () => {
         password: "cambio11",
       });
       expect(response.status).to.equal(200);
-      // Add assertions for rendering the products page
     });
 
     it("should return an error for invalid credentials", async () => {
@@ -44,7 +43,6 @@ describe("Session Router", () => {
         password: "password",
       });
       expect(response.status).to.equal(200);
-      // Add assertions for the error response
     });
   });
 
@@ -58,7 +56,6 @@ describe("Session Router", () => {
         rol: "user",
       });
       expect(response.status).to.equal(200);
-      // Add assertions for rendering the login page
     });
   });
 
@@ -66,7 +63,6 @@ describe("Session Router", () => {
     it("should return a message indicating a JWT in the headers", async () => {
       const response = await requester.get("/current");
       expect(response.status).to.equal(200);
-      // Add assertions for the message response
     });
   });
 
@@ -78,8 +74,8 @@ describe("Session Router", () => {
         email: "wgomez@wgomez.com",
       });
       expect(response.status).to.equal(200);
-      // Add assertions for rendering the login page
-    });
+     });
   });
 
 });
+
