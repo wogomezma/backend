@@ -33,9 +33,9 @@ const schema = new mongoose.Schema({
   },
 });
 
-schema.pre("find", function () {
-  this.populate("carts.cart");
-});
+// schema.pre("find", function () {
+//   this.populate("carts");
+// });
 
 schema.methods.login = async function () {
   this.last_connection = new Date();
@@ -43,7 +43,7 @@ schema.methods.login = async function () {
 };
 
 schema.methods.logout = async function () {
-  this.last_connection = null;
+  this.last_connection = new Date();
   await this.save();
 };
 

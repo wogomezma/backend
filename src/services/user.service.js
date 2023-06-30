@@ -12,7 +12,7 @@ class UserManager {
   getAllUsers = async (req, res) => {
     try {
       const users = await userModel.find({});
-      console.log("🚀 ~ file: user.service.js:9 ~ UserManager ~ getAllUsers= ~ users:", users)
+
       return users;
     } catch (error) {
       return res.status(500).json({ message: error.message });

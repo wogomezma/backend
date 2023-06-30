@@ -23,12 +23,26 @@ class SessionRoutes {
   
     initSessionRoutes() {
   
-        this.router.get(`${this.path}/logout`, async (req, res) => {
-            req.session.destroy((err) => {
-              if (!err) return res.redirect("/api/v1/views/login");
-              return res.send({ message: `logout Error`, body: err });
-            });
+      this.router.get(`${this.path}/logout`, async (req, res) => {
+        try {
+          const { user } = req.session;
+          if (user) {
+            const findUser = await userModel.findById(user.id);
+            if (findUser) {
+              await findUser.logout();
+            }
+          }
+          req.session.destroy((err) => {
+            if (!err) {
+              return res.redirect("/api/v1/views/login");
+            }
+            return res.send({ message: `logout Error`, body: err });
           });
+        } catch (error) {
+          console.log("🚀 ~ file: session.routes.js:XX ~ error:", error);
+          return res.send({ message: "An error occurred during logout", error });
+        }
+      });
 
 
           this.router.post(`${this.path}/login`, async (req, res) => {
@@ -58,7 +72,7 @@ class SessionRoutes {
               req.session.user = {
                 ...signUser,
               };
-          
+              await findUser.login();
              /*  return res.json({ message: `welcome $${email},login success`, token }); */
 
              const { page = 1 , limit= 10} = req.query;

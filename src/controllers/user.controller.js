@@ -22,7 +22,6 @@ class UserCtrl {
   getAllUsers = async (req, res) => {
     try {
       const users = await this.userManager.getAllUsers(req, res);
-      console.log("🚀 ~ file: user.controller.js:15 ~ UserCtrl ~ getAllUsers= ~ users:", users)
       return res.json({ message: `getAllUsers`, users });
     } catch (error) {
       return res.status(500).json({ message: error.message });
@@ -148,10 +147,17 @@ class UserCtrl {
   
       const requiredDocuments = ["identification", "proofOfAddress", "bankStatement"];
   
-      for (const document of requiredDocuments) {
-        if (!user.documents.includes(document)) {
+      for (const documentName of requiredDocuments) {
+        // Obtener el nombre del documento sin la extensión
+        const documentNameWithoutExtension = documentName.split(".")[0];
+
+  
+        // Verificar si el usuario ha cargado el documento requerido
+        const document = user.documents.find(doc => doc.name.split(".")[0] === documentNameWithoutExtension);
+        
+        if (!document) {
           return res.status(400).json({
-            message: `User has not uploaded the required document: ${document}`,
+            message: `User has not uploaded the required document: ${documentName}`,
           });
         }
       }
