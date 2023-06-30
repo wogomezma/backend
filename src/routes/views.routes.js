@@ -8,6 +8,10 @@ const rolhMdw = require("../middleware/rol.middleware")
 const handlePolicies = require("../middleware/handle-policies.middleware");
 const jwt = require('jsonwebtoken');
 const { SECRET_JWT } = require("../utils/jwt")
+const { userModel, findUserByEmail } = require('../models/user.model');
+
+
+
 
 
 class ViewsRoutes {
@@ -18,6 +22,8 @@ class ViewsRoutes {
 
   constructor() {
     this.initViewsRoutes();
+    
+
   }
 
   initViewsRoutes() {
@@ -186,7 +192,23 @@ this.router.get(`${this.path}/recover`, handlePolicies(["public"]), async (req, 
 });
 
 
+this.router.get(`${this.path}/documents/:uid`, async (req, res) => {
+  try {
+    const { uid} = req.params;
 
+    const user = await userModel.findById(uid);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const documents = user.documents; 
+
+    res.render("documents", { documents });
+  } catch (error) {
+    console.log("Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
 
 this.router.get(`${this.path}/sendrecovery`, handlePolicies(["public"]), async (req, res) => {
     

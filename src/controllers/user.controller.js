@@ -4,6 +4,7 @@ const { userModel, findUserByEmail } = require('../models/user.model');
 const { EnumErrors, HttpResponses } = require("../middleware/error-handle");
 const multer = require('multer');
 const upload = require("../middleware/multer");
+const path = require("path");
 
 
 const httpResp = new HttpResponses();
@@ -196,7 +197,7 @@ class UserCtrl {
         files.forEach((file) => {
           const document = {
             name: file.originalname,
-            reference: file.filename,
+            reference: path.join(file.destination, file.filename),
             status: "uploaded",
           };
           user.documents.push(document);

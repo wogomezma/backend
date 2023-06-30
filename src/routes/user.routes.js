@@ -1,6 +1,6 @@
 const { Router } = require("express");
 const handlePolicies = require("../middleware/handle-policies.middleware");
-const userModel = require("../models/user.model");
+const { userModel, findUserByEmail } = require('../models/user.model');
 const CartsManager = require("../services/carts.service");
 const UserCtrl = require("../controllers/user.controller");
 const upload = require("../middleware/multer");
@@ -24,7 +24,7 @@ class usersRoutes {
     this.router.delete(`${this.path}/:userId`, handlePolicies(["public"]), userCtrl.deleteUser);
     this.router.put(`${this.path}/:userId`, handlePolicies(["public"]), userCtrl.updateUser);
     this.router.post(`${this.path}/premium/:userId`, handlePolicies(["public"]), userCtrl.changeToPremium);
-    this.router.post(`${this.path}/:uid/documents`, handlePolicies(["public"]), upload.array("documents", 5), userCtrl.uploadDocuments);
+    this.router.post(`${this.path}/:uid/documents`, handlePolicies(["public"]), userCtrl.uploadDocuments);
   }
 }
 
