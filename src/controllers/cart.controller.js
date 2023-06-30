@@ -31,33 +31,29 @@ class CartCtrl {
 
   getCartById = async (req, res) => {
     try {
-
-      if (!req.params.cid|| isNaN(req.params.cid) || req.params.cid < 0) {
-        return httpResp.BadRequest(
-          res,
-          `${EnumErrors.INVALID_PARAMS} - Invalid Params for Cartsid `
-        );
-      }
-
-      const cart = await this.cartsManager.getCartById(req, res);
+      const cartId = req.params.cid;
+      const cart = await this.cartsManager.getCartsById(cartId);
+      console.log("🚀 ~ file: cart.controller.js:36 ~ CartCtrl ~ getCartById= ~ cart:", cart)
+      
       if (!cart) {
-        res.json({ message: `this cart does not exist` });
+        return res.status(404).json({ error: `Cart not found with ID: ${cartId}` });
       }
       return res.json({ message: `getCartById`, cart });
     } catch (error) {
       return httpResp.Error(
         res,
-        `${EnumErrors.DATABASE_ERROR} - ERROR DB ${error} `
+        `${EnumErrors.DATABASE_ERROR} - ERROR DB ${error}`
       );
     }
   };
-
+  
+  
 
   createCart = async (req, res) => {
     try {
         console.log("BODY en Controller ****", req.body);
     
-        const newCart = await this.cartsManager.createCart(req);
+        const newCart = await this.cartsManager.createCarts(req);
     
         if (!newCart) {
           return res.status(500).json({ message: "Cart creation failed" });

@@ -9,6 +9,11 @@ const roleType = {
   PREMIUM: "premium",
 };
 
+const documentSchema = new mongoose.Schema({
+  name: String,
+  reference: String,
+});
+
 const schema = new mongoose.Schema({
   name: String,
   lastname: String,
@@ -18,16 +23,13 @@ const schema = new mongoose.Schema({
     type: String,
     enum: Object.values(roleType),
   },
-  carts: {
-    type: [
-      {
-        cart: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Carts",
-        },
-      },
-    ],
+  documents: {
+    type: [documentSchema],
     default: [],
+  },
+  last_connection: {
+    type: Date,
+    default: null,
   },
 });
 
@@ -35,8 +37,18 @@ schema.pre("find", function () {
   this.populate("carts.cart");
 });
 
+schema.methods.login = async function () {
+  this.last_connection = new Date();
+  await this.save();
+};
+
+schema.methods.logout = async function () {
+  this.last_connection = null;
+  await this.save();
+};
+
 const findUserByEmail = async (email) => {
-  console.log("🚀 ~ file: user.model.js:38 ~ findUserByEmail ~ email:", email)
+  console.log("🚀 ~ file: user.model.js:38 ~ findUserByEmail ~ email:", email);
   return await userModel.findOne({ email });
 };
 

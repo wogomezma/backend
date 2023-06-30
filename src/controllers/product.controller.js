@@ -59,17 +59,26 @@ class ProductCtrl {
       // }
       
       const productsDetail = await this.productManager.getProductsById(req, res);
+      console.log("🚀 ~ file: product.controller.js:62 ~ ProductCtrl ~ getProductsById= ~ productsDetail:", productsDetail)
       
-      // You can also log the success case
+      if (!productsDetail) {
+        // Producto no encontrado
+        
+        const errorMessage = `Product not found with ID: ${req.params.productsId}`;
+        req.logger.debug(errorMessage);
+        return res.status(404).json({ error: errorMessage });
+      }
+  
+      // Puedes registrar el caso de éxito también
       req.logger.debug(`Products info fetched successfully: ${JSON.stringify(productsDetail)}`);
       
       return res.json({
         message: `get products info successfully`,
         products: productsDetail,
       });
-
+  
     } catch (error) {
-      // log the error with the 'debug' level
+      // Registrar el error con el nivel 'debug'
       req.logger.debug(`Error while fetching products info: ${error}`);
       
       return httpResp.Error(
@@ -77,7 +86,8 @@ class ProductCtrl {
         `${EnumErrors.DATABASE_ERROR} - ERROR DB ${error} `
       );
     }
-};
+  };
+  
 
 
 

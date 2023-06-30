@@ -1,0 +1,12 @@
+{
+    "workbench.editorLargeFileConfirmation": 3000,
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "DESKTOP-0C82B9O",
+            "database": "C:\\Users\\admin\\Downloads\\consolidado.csv"
+        }
+    ],
+    "sqltools.useNodeRuntime": true
+}
