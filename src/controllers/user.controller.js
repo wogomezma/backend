@@ -5,8 +5,10 @@ const { EnumErrors, HttpResponses } = require("../middleware/error-handle");
 const multer = require('multer');
 const upload = require("../middleware/multer");
 const path = require("path");
+const EmailService = require("../services/email.services");
 
 
+const emailService = new EmailService();
 const httpResp = new HttpResponses();
 
 class UserCtrl {
@@ -87,15 +89,16 @@ class UserCtrl {
   };
 
   deleteUser = async (req, res) => {
+    
     try {
 
 
-      if (!req.params.userId || isNaN(req.params.userId) || req.params.userId < 0) {
-        return httpResp.BadRequest(
-          res,
-          `${EnumErrors.INVALID_PARAMS} - Invalid Params for userId `
-        );
-      }
+      // if (!req.params.userId || isNaN(req.params.userId) || req.params.userId < 0) {
+      //   return httpResp.BadRequest(
+      //     res,
+      //     `${EnumErrors.INVALID_PARAMS} - Invalid Params for userId `
+      //   );
+      // }
 
         const deleteUserById = await this.userManager.deleteUser(req, res);
         if (!deleteUserById) {
@@ -109,6 +112,46 @@ class UserCtrl {
         return res.status(500).json({ messagedelete: error.message });
       }
   };
+
+
+  deleteInactiveUsers = async (req, res) => {
+    try {
+      // Calcular la fecha actual menos 30 minutos
+      const thirtyMinutesAgo = new Date(Date.now() - 1 * 60 * 1000);
+  
+      // Buscar los usuarios inactivos con rol "user"
+      const usersToDelete = await userModel.find({
+        rol: "user",
+        last_connection: { $lt: thirtyMinutesAgo },
+      });
+  
+      // Obtener los correos electrónicos de los usuarios a eliminar
+      const emailsToDelete = usersToDelete.map(user => user.email);
+      console.log("Usuarios a eliminar:", emailsToDelete);
+  
+      // Eliminar los usuarios inactivos con rol "user"
+      const deletedUsers = await userModel.deleteMany({
+        rol: "user",
+        last_connection: { $lt: thirtyMinutesAgo },
+      });
+  
+      // Enviar un correo electrónico a cada usuario eliminado
+      for (const email of emailsToDelete) {
+        console.log(`Usuario eliminado: ${email}`);
+        await emailService.sendEmail({
+          from: "pruebascoder@wgomez.com",
+          to: email,
+          subject: "Cuenta eliminada por inactividad",
+          text: `Tu cuenta (${email}) ha sido eliminada debido a la inactividad en los últimos 2 dias.`,
+        });
+      }
+  
+      return res.json({ message: "Usuarios inactivos eliminados correctamente" });
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  };
+  
 
 
   updateUser = async (req, res) => {
@@ -179,6 +222,11 @@ class UserCtrl {
     }
   };
 
+  
+
+  
+ 
+
   uploadDocuments = async (req, res) => {
     try {
       const userId = req.params.uid;
@@ -188,7 +236,7 @@ class UserCtrl {
         return res.status(404).json({ message: "User not found" });
       }
 
-      const uploadMiddleware = upload.array("documents", 5);
+      const uploadMiddleware = upload.array("documents", 11);
 
 
       uploadMiddleware(req, res, async (err) => {

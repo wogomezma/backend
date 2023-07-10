@@ -1,17 +1,57 @@
-<div>
-  <h1>Perfil de usuario</h1>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Profile</title>
+  <script>
+    function showConfirmationMessage(message) {
+      alert(message);
+    }
 
-  <p>{{this.lastname}}</p>
-  <p>{{this.email}}</p>
+    function showErrorMessage(error) {
+      alert(`Error: ${error}`);
+    }
+  </script>
+</head>
+<body>
+  <h1>Profile Page</h1>
 
   <div>
-    <form action="/api/session/logout" method="get">
-      <br />
-      <button type="submit">logout</button>
+    <img src="{{imagenprofile}}" alt="Foto de Perfil">
+  </div>
+
+  <h2>Perfil de Usuario</h2>
+  <div>
+    <h3>Id: {{this.id}}</h3>
+    <h3>Nombre: {{this.name}}</h3>
+    <h3>Email: {{this.email}}</h3>
+    <h3>Rol: {{this.rol}}</h3>
+  </div>
+
+  <h2>Foto de Perfil</h2>
+  <div>
+    <form action="/api/v1/users/{{this.id}}/documents" method="POST" enctype="multipart/form-data" onsubmit="showConfirmationMessage('Foto subida correctamente.')">
+      <input type="hidden" name="type" value="profile">
+      <input type="file" name="documents" accept="image/jpeg">
+      <button type="submit">Subir Foto</button>
     </form>
   </div>
 
-</div>
-<form action="/api/v1/session/logout" method="get">
-  <input type="submit" value="logout">
-</form>
+  <h2>Documentos de Contacto</h2>
+  <div>
+    <form action="/api/v1/users/{{this.id}}/documents" method="POST" enctype="multipart/form-data" onsubmit="showConfirmationMessage('Documentos de contacto subidos correctamente.')">
+      <input type="hidden" name="type" value="contact">
+      <input type="file" name="documents" accept=".doc, .docx, .pdf, .txt" multiple>
+      <button type="submit">Subir Documentos</button>
+    </form>
+  </div>
+
+  <h2>Documentos Bancarios</h2>
+  <div>
+    <form action="/api/v1/users/{{this.id}}/documents" method="POST" enctype="multipart/form-data" onsubmit="showConfirmationMessage('Documentos bancarios subidos correctamente.')">
+      <input type="hidden" name="type" value="bank">
+      <input type="file" name="documents" accept=".doc, .docx, .pdf, .txt" multiple>
+      <button type="submit">Subir Documentos</button>
+    </form>
+  </div>
+</body>
+</html>

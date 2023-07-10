@@ -3,6 +3,7 @@ const { find } = require("../models/user.model");
 const { userModel, findUserByEmail } = require('../models/user.model');
 const CartsManager = require("../services/carts.service");
 const {productsModel} = require("../models/products.model");
+const cartsModel = require("../models/carts.model");
 const passport = require("passport");
 const { createHashValue, isValidPasswd } = require("../utils/encrypt");
 const ROLES = require("../constantes/roles");
@@ -84,12 +85,14 @@ class SessionRoutes {
                 const linkcarts = `${this.path}/carts`
 
              return res.render("products", {
+              uid: req.session?.user?.name || findUser.id,
               name: req.session?.user?.name || findUser.name,
               lastname: req.session?.user?.lastname || findUser.lastname,
               email: req.session?.user?.email || email,
               rol: req.session?.user?.rol || findUser.rol,
-              messagesession: `Welcome ${findUser.name} ${findUser.lastname} your rol is ${findUser.rol} your token is ${token}`,
+              messagesession: `Welcome ${findUser.name} ${findUser.lastname} your rol is ${findUser.rol}`,
               products: docs,
+              cid: req.session?.user?.cart || findUser.cart,
               page,
               hasPrevPage,
               hasNextPage,
@@ -121,9 +124,14 @@ class SessionRoutes {
               const pswHashed = await createHashValue(password);
               console.log("🚀 ~ file: session.routes.js:101 ~ SessionRoutes ~ this.router.post ~ pswHashed:", pswHashed)
           
-              const userAdd = { name, lastname, email, password: pswHashed, rol };
+              const titlecart = 'Carts of ' + email;
+              const descriptioncart = 'Carts of ' + name;
+              const newCartsdata = { title: titlecart, description: descriptioncart, category: "CartsUser" };
+              const newCarts = await cartsModel.create(newCartsdata);
+              console.log("🚀 ~ file: session.routes.js:132 ~ SessionRoutes ~ this.router.post ~ newCarts._id:", newCarts._id)
+              const userAdd = { name, lastname, email, password: pswHashed, rol, cart: newCarts._id };
               const newUser = await userModel.create(userAdd);
-              console.log("🚀 ~ file: session.routes.js:73 ~ SessionRoutes ~ this.router.get ~ newUser:", newUser)
+              console.log("🚀 ~ file: session.routes.js:132 ~ SessionRoutes ~ this.router.get ~ newUser:", newUser)
 
           
               req.session.user = { email, name, lastname, rol };

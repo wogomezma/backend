@@ -1,5 +1,6 @@
 const CartsManager = require("../services/carts.service");
 const cartsModel= require('../models/carts.model');
+const { userModel, findUserByEmail } = require('../models/user.model');
 const { productsModel, findUserByCode, } = require('../models/products.model');
 const EmailRoutes = require("../routes/email.routes");
 const { EMAIL, PSW_EMAIL } = require("../config/config");
@@ -87,9 +88,14 @@ class CartCtrl {
 
   updateCart = async (req, res) => {
     try {
-      const currentUser = req.user;
-      const { user } = currentUser;
-      const productsDetail = await productsModel.findById({ _id: req.params.cid});
+      console.log("🚀 ~ file: cart.controller.js:91 ~ CartCtrl ~ updateCart= ~ user:", req.params.uid, req.params.pid)
+      const user = await userModel.findById({ _id: req.params.uid });
+      console.log("🚀 ~ file: cart.controller.js:93 ~ CartCtrl ~ updateCart= ~ user:", user)
+      const cid = user.cart.toString();
+      console.log("🚀 ~ file: cart.controller.js:95 ~ CartCtrl ~ updateCart= ~ cid:", cid)
+      req.params.cid = cid;
+      console.log("🚀 ~ file: cart.controller.js:93 ~ CartCtrl ~ updateCart= ~ req.params.cid:", req.params.cid)
+      const productsDetail = await productsModel.findById({ _id: req.params.pid});
       console.log("🚀 ~ file: product.controller.js:186 ~ ProductCtrl ~ deleteProducts ~ productsDetail:", productsDetail)
       const { owner } = productsDetail;
       const ownerId = owner.toString();
@@ -118,6 +124,37 @@ class CartCtrl {
       return res.status(500).json({ messageupdatecartr: error.message });
     }
   };
+
+
+  emptyCart = async (req, res) => {
+    try {
+      const { cid, pid } = req.body;
+      console.log("🚀 ~ file: cart.controller.js:132 ~ CartCtrl ~ emptyCart= ~ pid:", pid)
+      console.log("🚀 ~ file: cart.controller.js:132 ~ CartCtrl ~ emptyCart= ~ cid:", cid)
+
+      const cart = await cartsModel.findById(cid);
+
+      if (!cart) {
+        return res.status(404).json({ message: 'Cart not found' });
+      }
+
+      // Find the index of the product to be removed
+      const productIndex = cart.products.findIndex((item) => item.product.toString() === pid);
+
+      if (productIndex === -1) {
+        return res.status(404).json({ message: 'Product not found in the cart' });
+      }
+
+      // Remove the product from the cart
+      cart.products.splice(productIndex, 1);
+      await cart.save();
+
+      return res.status(200).json({ message: 'Product removed from the cart successfully' });
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  };
+
   
   purchaseCart = async (req, res) => {
     try {

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>User Admin</title>
+  <script>
+    function confirmChangeRole(email, uid) {
+      if (confirm(`¿Deseas cambiar el rol del usuario ${email} a Premium?`)) {
+        changeRole(email, uid);
+      }
+    }
+
+    async function changeRole(email, uid) {
+      try {
+        const response = await fetch(`/api/v1/users/premium/${uid}`, {
+          method: 'POST'
+        });
+
+        if (response.ok) {
+          alert(`Se cambió el rol del usuario ${email} a Premium`);
+          location.reload(); // Recargar la página después de cambiar el rol
+        } else {
+          const errorData = await response.json();
+          alert(`Error al cambiar el rol del usuario: ${errorData.message}`);
+        }
+      } catch (error) {
+        alert('Error al cambiar el rol del usuario');
+      }
+    }
+  </script>
+</head>
+<body>
+  <h1>User Admin Page</h1>
+  <table>
+    <tr>
+      <th>Nombre</th>
+      <th>Apellido</th>
+      <th>Email</th>
+      <th>Rol</th>
+      <th>Última Conexión</th>
+      <th>Acciones</th>
+    </tr>
+    {{#each users}}
+      <tr>
+        <td>{{this.name}}</td>
+        <td>{{this.lastname}}</td>
+        <td>{{this.email}}</td>
+        <td>{{this.rol}}</td>
+        <td>{{this.last_connection}}</td>
+        <td>
+          <button onclick="confirmChangeRole('{{this.email}}', '{{this.uid}}')">Cambiar ROL</button>
+          <button onclick="confirmDelete('{{this.email}}', '{{this.uid}}')">Eliminar</button>
+        </td>
+      </tr>
+    {{/each}}
+  </table>
+</body>
+</html>

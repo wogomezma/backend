@@ -38,11 +38,11 @@ class UserManager {
         const { name, lastname, email, password, rol="user" } = req.body;
         const pswHashed = await createHashValue(password);
         console.log("🚀 ~ file: user.service.js:31 ~ UserManager ~ createUser= ~ pswHashed:", pswHashed)
-        var titlecart = 'Carts of' + email
-        var descriptioncart = 'Carts of' + name;
+        var titlecart = 'Carts of ' + email
+        var descriptioncart = 'Carts of ' + name;
         const newCartsdata = { title: titlecart, description: descriptioncart, category: "CartsUser"};
         const newCarts = await cartsModel.create(newCartsdata);
-        const userAdd = { name, lastname, email, password: pswHashed, rol, carts: newCarts._id };
+        const userAdd = { name, lastname, email, password: pswHashed, rol, cart: newCarts._id };
         console.log("🚀 ~ file: user.service.js:42 ~ UserManager ~ createUser= ~ newCarts:", newCarts)
         const newUser = await userModel.create(userAdd);
         console.log("🚀 ~ file: user.service.js:35 ~ UserManager ~ createUser= ~ newUser:", newUser)
@@ -95,9 +95,9 @@ class UserManager {
       // Cambiar el rol del usuario
       if (user.rol === "premium") {
         
-        user.rol = "admin";
+        user.rol = "user";
         console.log("🚀 ~ file: user.service.js:101 ~ UserCtrl ~ changeToPremium= ~ user.role:", user.rol);
-      } else if (user.rol === "admin") {
+      } else if (user.rol === "user") {
         user.rol = "premium";
         console.log("🚀 ~ file: user.service.js:104 ~ UserCtrl ~ changeToPremium= ~ user.role:", user.rol);
       }

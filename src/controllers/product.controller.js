@@ -1,10 +1,14 @@
 const ProductsManager = require("../services/products.service");
 const { productsModel, findUserByCode, } = require('../models/products.model');
+const { userModel, findUserByEmail } = require('../models/user.model');
 const { EnumErrors, HttpResponses } = require("../middleware/error-handle");
 const setLogger = require('../utils/logger');
 const express = require('express');
 const app = express();
 app.use(setLogger);
+const EmailService = require("../services/email.services");
+
+const emailService = new EmailService();
 
 const httpResp = new HttpResponses();
 
@@ -203,6 +207,21 @@ class ProductCtrl {
           // Si el usuario es premium, validar si es el propietario del producto
           if (ownerId === user.id) {
             const deleteProductById = await productsModel.deleteOne({ _id: req.params.productsId });
+
+
+            // Enviar correo electrónico al propietario del producto premium
+            const ownerUser = await userModel.findOne({ _id: owner });
+
+            if (ownerUser) {
+              await emailService.sendEmail({
+                from: "pruebascoder@wgomez.com",
+                to: ownerUser.email,
+                subject: "Producto eliminado",
+                text: `Tu producto ${productDetail.name} ha sido eliminado.`,
+              });
+            }
+
+
             return deleteProductById;
           } else {
             return res.status(403).json({ message: "El producto no pertenece al usuario" });

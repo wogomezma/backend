@@ -1,4 +1,9 @@
-{{!-- <H1>Lista de Productos</H1>
+<h1>List Products</h1>
+<h2>{{messagesession}}</h2>
+
+<form action="/api/v1/views/carts/{{this.cid}}" method="get">
+  <input type="submit" value="carts">
+</form>
 
 {{#each products}}
   <p>Name: {{this.name}} </p>
@@ -7,48 +12,73 @@
   <p>Code: {{this.code}}</p>
   <p>Stock: {{this.stock}}</p>
   <p>Thumbnail: {{this.thumbnail}}</p>
-  <p>Carts: {{this.carts}}</p>
-  <p>-------------------</p>
-{{/each}} --}}
 
-
-  <h1>List Products</h1>
-  <h2>{{messagesession}}</h2>
-  <h3>Join all Carts (only rol admin)</h3>
-  <form action="/api/v1/views/carts" method="get">
-  <input type="submit" value="carts">
-</form>
-  {{#each products}}
-  <p>Name: {{this.name}} </p>
-  <p>Description: {{this.description}}</p>
-  <p>Price: {{this.price}}</p>
-  <p>Code: {{this.code}}</p>
-  <p>Stock: {{this.stock}}</p>
-  <p>Thumbnail: {{this.thumbnail}}</p>
-
-  <form method="post" action="http://localhost:8080/api/v1/carts/6419fbc078eae46eb1fff5e5/products/{{this.id}}" >
-  <button type="submit">Agregar al Carrito</button>
+  <form class="add-to-cart-form" data-product-id="{{this.id}}">
+    <!-- Agrega un campo oculto para enviar el ID del usuario -->
+    <input type="hidden" name="uid" value="">
+    <button type="submit">Agrega a Carrito</button>
   </form>
+
   <p>-------------------</p>
-  {{/each}}
+{{/each}}
 
-  <div>
-    <p>Pagina actual {{page}}</p>
-    <p>Paginas totales {{totalPages}}</p>
-  </div>
-
-  {{#if hasPrevPage}}
-    <p>Pagina previa {{prevPage}}</p>
-    <a href="/api/v1/{{prevlink}}"><button
-      >Anterior</button></a>
-  {{/if}}
-
-  {{#if hasNextPage}}
-    <p>Pagina siguiente {{nextPage}}</p>
-    <a href="/api/v1/{{nextlink}}"><button
-      >Siguiente</button></a>
-  {{/if}}
+<div>
+  <p>Pagina actual {{page}}</p>
+  <p>Paginas totales {{totalPages}}</p>
 </div>
+
+{{#if hasPrevPage}}
+  <p>Pagina previa {{prevPage}}</p>
+  <a href="/api/v1/{{prevlink}}"><button>Anterior</button></a>
+{{/if}}
+
+{{#if hasNextPage}}
+  <p>Pagina siguiente {{nextPage}}</p>
+  <a href="/api/v1/{{nextlink}}"><button>Siguiente</button></a>
+{{/if}}
+
 <form action="/api/v1/session/logout" method="get">
   <input type="submit" value="logout">
 </form>
+
+<script>
+  // Obtén todos los formularios de "Agregar al carrito"
+ const addToCartForms = document.querySelectorAll('.add-to-cart-form');
+
+
+  // Escucha el evento de envío del formulario
+ addToCartForms.forEach((form) => {
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault(); // Evita el comportamiento predeterminado de envío del formulario
+    
+    const uid = '{{this.uid}}'; // Obtén el ID del usuario del contexto de Handlebars
+    const productId = form.getAttribute('data-product-id');
+
+// Actualiza el valor del campo oculto con el ID del usuario
+    form.querySelector('input[name="uid"]').value = uid;
+
+
+try {
+  const response = await fetch(`/api/v1/carts/${uid}/${productId}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+        if (response.ok) {
+          // Producto agregado correctamente al carrito
+          alert('Producto agregado al carrito correctamente.');
+          // Aquí puedes realizar cualquier manipulación adicional que desees sin recargar la página
+        } else {
+          // Error al agregar el producto al carrito
+          const errorData = await response.json();
+          alert(errorData.message);
+        }
+      } catch (error) {
+        // Error de red u otro error
+        console.error(error);
+        alert('Ocurrió un error al agregar el producto al carrito. Inténtalo nuevamente más tarde.');
+      }
+    });
+  });
+</script>

@@ -39,16 +39,40 @@ class ViewsRoutes {
     this.router.get(`${this.path}/register`, async (req, res) => {
       res.render("register");
     });
-    this.router.get(`${this.path}/profile`, handlePolicies(["user", "admin"]), async (req, res) => {
+    
+    
+    this.router.get(`${this.path}/profile`, handlePolicies(["public"]), async (req, res) => {
       const user = req.session.user;
-      console.log("🚀 ~ file: views.routes.js:30 ~ ViewsRoutes ~ router.get ~ user:", user)
-      res.render("profile", {
-        user,
-        carrito: { carritoId: '6419fbc078eae46eb1fff5e5', products: [{ pid: '64137403363614f24646475b', nombre: 'Producto de prueba'}]}
-      });
+      let imagenprofile = '';
+
+
+
+ 
+      const currentuser = await userModel.findById({ _id: user.id });
+
+   
+      
+      const identificationDocument = currentuser.documents.find(document => /^identification\./.test(document.name));
+
+
+    
+        if (identificationDocument) {
+          imagenprofile = identificationDocument.reference;
+
+        }
+      
+      
+        res.render("profile", {
+          id: currentuser._id.toString(),
+          name: `${currentuser.name} ${currentuser.lastname}`,
+          email: currentuser.email,
+          rol: currentuser.rol,
+          imagenprofile,
+        });
+        
     });
 
-    this.router.get(`${this.path}/products`,  handlePolicies(["user", "admin"]), async (req, res) => {
+    this.router.get(`${this.path}/products`,  handlePolicies(["public"]), async (req, res) => {
       const { page = 1 , limit= 10} = req.query;
       const { docs, hasPrevPage, hasNextPage, nextPage, prevPage, length, totalPages } =
         await productsModel.paginate({}, { limit: limit, page, lean: true });
@@ -123,7 +147,7 @@ class ViewsRoutes {
     });*/
   
 
-  this.router.get(`${this.path}/carts`, handlePolicies(["admin"]), async (req, res) => {
+  this.router.get(`${this.path}/carts`, handlePolicies(["public"]), async (req, res) => {
     const { page = 1 , limit= 10} = req.query; // extrae el query param page y sino viene el valor por defecto es 1
     const { docs, hasPrevPage, hasNextPage, nextPage, prevPage, length, totalPages } =
       await cartsModel.paginate({}, { limit: limit, page, lean: true });
@@ -144,30 +168,65 @@ class ViewsRoutes {
     });
   });
 
-  this.router.get(`${this.path}/carts/:cartsId`, handlePolicies(["user", "admin"]), async (req, res) => {
-    try {
-      const id = req.params.cartsId;
-      const cartsDetail = await this.cartsManager.getCartsById(id);
-      const originalArray = cartsDetail[0].products
-      console.log("🚀 ~ file: views.routes.js:131 ~ ViewsRoutes ~ this.router.get ~ originalArray:", originalArray)
+//   this.router.get(`${this.path}/carts/:cartsId`, handlePolicies(["public"]), async (req, res) => {
+//     try {
+//       const id = req.params.cartsId;
+//       const cartsDetail = await this.cartsManager.getCartsById(id);
+//       const originalArray = cartsDetail[0].products
+//       console.log("🚀 ~ file: views.routes.js:131 ~ ViewsRoutes ~ this.router.get ~ originalArray:", originalArray)
 
-      const productsname = originalArray.map(element => {
-        return element.product.name;
-      });
-      const productsquantity = originalArray.map(element => {
-        return element.quantity;
-      });
-      console.log("🚀 ~ file: views.routes.js:138 ~ ViewsRoutes ~ productsquantity ~ productsquantity:", productsquantity)
-      console.log("🚀 ~ file: views.routes.js:131 ~ ViewsRoutes ~ this.router.get ~ productsold:", productsname)
-      return res.render('cartsid', { productsname, productsquantity });
+//       const productsname = originalArray.map(element => {
+//         return element.product.name;
+//       });
+//       const productsquantity = originalArray.map(element => {
+//         return element.quantity;
+//       });
+//       console.log("🚀 ~ file: views.routes.js:138 ~ ViewsRoutes ~ productsquantity ~ productsquantity:", productsquantity)
+//       console.log("🚀 ~ file: views.routes.js:131 ~ ViewsRoutes ~ this.router.get ~ productsold:", productsname)
+//       return res.render('cartsid', { productsname, productsquantity });
 
-      } catch (error) {
-    console.log(
-      "🚀 ~ file: carts.routes.js:43 ~ CartsRoutes ~ this.router.get ~ error:",
-      error
-    );
+//       } catch (error) {
+//     console.log(
+//       "🚀 ~ file: carts.routes.js:43 ~ CartsRoutes ~ this.router.get ~ error:",
+//       error
+//     );
+//   }
+// });
+
+this.router.get(`${this.path}/carts/:cartsId`, handlePolicies(["public"]), async (req, res) => {
+  try {
+    const { cartsId } = req.params;
+    const cart = await cartsModel.findById(cartsId).populate('products.product').lean();
+
+    if (!cart) {
+      return res.status(404).json({ message: 'Cart not found' });
+    }
+
+    const products = cart.products.map((item) => {
+      const product = item.product;
+      const quantity = item.quantity;
+      const price = product.price;
+      const totalValue = quantity * price;
+      return {
+        name: product.name,
+        quantity,
+        price,
+        totalValue,
+        cid: cartsId,
+        pid: product._id.toString(),
+      };
+    });
+    
+    const totalCartValue = products.reduce((total, item) => total + item.totalValue, 0);
+
+    res.render("cartsid", { products, totalCartValue, cartsId }); // Renderizar la vista "cartsid" con los productos y el valor total del carrito
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
   }
 });
+
+
+
 
 this.router.get(`${this.path}/recover`, handlePolicies(["public"]), async (req, res) => {
   const token = req.query[Object.keys(req.query)[0]];
@@ -209,6 +268,43 @@ this.router.get(`${this.path}/documents/:uid`, async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
+this.router.get(`${this.path}/useradmin`, handlePolicies(["public"]), async (req, res) => {
+  try {
+    // Obtener todos los usuarios registrados
+    // const users = await userModel.find({});
+    
+    // const users = [
+    //   {
+    //     name: 'Walter5',
+    //     lastname: 'Gomez',
+    //     email: 'wgomez5@wgomez.com',
+
+    //     rol: 'admin',
+    //     last_connection: '2023-07-10T17:48:52.577Z',
+    //   },
+      // Resto de usuarios
+    //];
+    const users = await userModel.find({}, 'name lastname email rol last_connection');
+  
+    const usersData = users.map(user => {
+      return {
+        uid: user._id.toString(),
+        name: user.name,
+        lastname: user.lastname,
+        email: user.email,
+        rol: user.rol,
+        last_connection: user.last_connection
+      };
+    });
+    
+    return res.render("useradmin", { users: usersData });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 
 this.router.get(`${this.path}/sendrecovery`, handlePolicies(["public"]), async (req, res) => {
     

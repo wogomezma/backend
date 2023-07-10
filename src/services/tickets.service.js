@@ -1,5 +1,6 @@
 const ticketModel = require('../models/ticket.model');
-
+const cartsModel = require("../models/carts.model");
+const { userModel, findUserByEmail } = require('../models/user.model');
 
 class TicketManager {
     getAllTickets = async (req, res) => {
@@ -29,23 +30,37 @@ class TicketManager {
   
     createTickets = async (req, res) => {
       try {
-        console.log("BODY Service****", req.body);
+        const { cid, amount } = req.body;
+
     
-        const { amount, purchaser, products } = req.body;
+        const cart = await cartsModel.findById(cid).populate('products.product').lean();
+        if (!cart) {
+          return res.status(404).json({ message: 'Cart not found' });
+        }
+    
+        const user = await userModel.findOne({ cart: cid });
+        const purchaser = user ? user._id : null;
+    
+        const products = cart.products.map((item) => ({
+          productId: item.product._id,
+          quantity: item.quantity,
+          price: item.product.price,
+        }));
     
         const ticketAdd = { amount, purchaser, products };
         const newTicket = await ticketModel.create(ticketAdd);
-        console.log("🚀 ~ file: tickets.service.js:41 ~ TicketManager ~ createTickets= ~ newTicket:", newTicket)
-    
+
+         // Eliminar los productos del carrito
+    await cartsModel.findByIdAndUpdate(cid, { $set: { products: [] } });
+
         return newTicket;
-    
       } catch (error) {
-        console.log(
-          "🚀 ~ file: tickets.service.js:47 ~ TicketManager ~ createTickets= ~ error:",
-          error
-        );
+        console.log('Error:', error);
+        return res.status(500).json({ message: 'Error creating ticket' });
       }
     };
+    
+    
     
     
   

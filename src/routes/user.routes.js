@@ -25,6 +25,7 @@ class usersRoutes {
     this.router.put(`${this.path}/:userId`, handlePolicies(["public"]), userCtrl.updateUser);
     this.router.post(`${this.path}/premium/:userId`, handlePolicies(["public"]), userCtrl.changeToPremium);
     this.router.post(`${this.path}/:uid/documents`, handlePolicies(["public"]), userCtrl.uploadDocuments);
+    this.router.delete(`${this.path}/`, handlePolicies(["public"]), userCtrl.deleteInactiveUsers);
   }
 }
 

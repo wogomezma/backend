@@ -31,6 +31,11 @@ const schema = new mongoose.Schema({
     type: Date,
     default: null,
   },
+  cart: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Carts",
+    default: null,
+  },
 });
 
 // schema.pre("find", function () {
