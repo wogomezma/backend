@@ -22,15 +22,15 @@ class ProductsRoutes {
 
   initProductsRoutes() {
 
-    this.router.get(`${this.path}/`, handlePolicies(["public"]), productCtrl.getAllProducts);
+    this.router.get(`${this.path}/`, handlePolicies(["user","premium"]), productCtrl.getAllProducts);
 
-    this.router.get(`${this.path}/:productsId`, handlePolicies(["public"]), productCtrl.getProductsById);
+    this.router.get(`${this.path}/:productsId`, handlePolicies(["user","premium"]), productCtrl.getProductsById);
 
-    this.router.post(`${this.path}/`, handlePolicies(["public"]), productCtrl.createProducts);
+    this.router.post(`${this.path}/`, handlePolicies(["admin","premium"]), productCtrl.createProducts);
 
-    this.router.delete(`${this.path}/:productsId`, handlePolicies(["public"]), productCtrl.deleteProducts);
+    this.router.delete(`${this.path}/:productsId`, handlePolicies(["admin","premium"]), productCtrl.deleteProducts);
 
-    this.router.put(`${this.path}/:productsId`, handlePolicies(["public"]), productCtrl.updateProducts);
+    this.router.put(`${this.path}/:productsId`, handlePolicies(["admin","premium"]), productCtrl.updateProducts);
 
 
 

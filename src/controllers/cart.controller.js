@@ -100,8 +100,7 @@ class CartCtrl {
       const { owner } = productsDetail;
       const ownerId = owner.toString();
 
-      console.log("🚀 ~ file: products.service.js:190 ~ ProductsManager ~ deleteProduct ~ owner:", ownerId,"and",user.id)
-  
+   
       if (user.rol === 'premium') {
         // Si el usuario es premium, validar si es el propietario del producto
         if (ownerId === user.id) {

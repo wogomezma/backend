@@ -1,12 +1,14 @@
 <h1>List Products</h1>
 <h2>{{messagesession}}</h2>
 
-<form action="/api/v1/views/carts/{{this.cid}}" method="get">
-  <input type="submit" value="carts">
+
+<form id="carts-form">
+  <input type="hidden" name="token" value="{{token}}">
+  <button type="button" onclick="sendGetRequest()">Carts</button>
 </form>
 
 {{#each products}}
-  <p>Name: {{this.name}} </p>
+  <p>Name: {{this.name}}</p>
   <p>Description: {{this.description}}</p>
   <p>Price: {{this.price}}</p>
   <p>Code: {{this.code}}</p>
@@ -37,34 +39,37 @@
   <a href="/api/v1/{{nextlink}}"><button>Siguiente</button></a>
 {{/if}}
 
+<form id="profile-form" action="/api/v1/views/profile" method="get">
+  <button type="submit">Profile</button>
+</form>
+
 <form action="/api/v1/session/logout" method="get">
   <input type="submit" value="logout">
 </form>
 
 <script>
   // Obtén todos los formularios de "Agregar al carrito"
- const addToCartForms = document.querySelectorAll('.add-to-cart-form');
-
+  const addToCartForms = document.querySelectorAll('.add-to-cart-form');
 
   // Escucha el evento de envío del formulario
- addToCartForms.forEach((form) => {
-  form.addEventListener('submit', async (event) => {
-    event.preventDefault(); // Evita el comportamiento predeterminado de envío del formulario
-    
-    const uid = '{{this.uid}}'; // Obtén el ID del usuario del contexto de Handlebars
-    const productId = form.getAttribute('data-product-id');
+  addToCartForms.forEach((form) => {
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault(); // Evita el comportamiento predeterminado de envío del formulario
 
-// Actualiza el valor del campo oculto con el ID del usuario
-    form.querySelector('input[name="uid"]').value = uid;
+      const uid = '{{this.uid}}'; // Obtén el ID del usuario del contexto de Handlebars
+      const productId = form.getAttribute('data-product-id');
+      form.querySelector('input[name="uid"]').value = uid; // Actualiza el valor del campo oculto con el ID del usuario
 
+      try {
+        const token = '{{token}}'; // Obtiene el token de autorización
+        const response = await fetch(`/api/v1/carts/${uid}/${productId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}` // Agrega el token al encabezado Authorization
+          },
+        });
 
-try {
-  const response = await fetch(`/api/v1/carts/${uid}/${productId}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
         if (response.ok) {
           // Producto agregado correctamente al carrito
           alert('Producto agregado al carrito correctamente.');
@@ -81,4 +86,41 @@ try {
       }
     });
   });
+
+  // Manejo del formulario de perfil
+  const profileForm = document.getElementById('profile-form');
+  profileForm.addEventListener('submit', () => {
+    const token = '{{token}}'; // Obtén el token de autorización
+    profileForm.setAttribute('action', `/api/v1/views/profile?token=${token}`); // Agrega el token como parámetro en la URL del formulario
+  });
+
+
+  function sendGetRequest() {
+    const token = localStorage.getItem('token'); // Obtiene el token de autorización del almacenamiento local
+    const cid = '{{this.cid}}'; // Obtén el valor de this.cid del contexto de Handlebars
+    const url = `/api/v1/views/carts/${cid}`;
+
+    const headers = new Headers();
+    headers.append('Authorization', `Bearer ${token}`);
+
+    const requestOptions = {
+      method: 'GET',
+      headers: headers
+    };
+
+
+    fetch(url, requestOptions)
+      .then(response => {
+        if (response.ok) {
+          window.location.href = url; // Redirige a la URL del carrito
+        } else {
+          // Error al realizar la solicitud GET al carrito
+        }
+      })
+      .catch(error => {
+        // Ocurrió un error de red u otro error, maneja el error aquí
+        console.error(error);
+      });
+  }
+
 </script>

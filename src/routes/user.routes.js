@@ -18,7 +18,7 @@ class usersRoutes {
   }
 
   initusersRoutes() {
-    this.router.get(`${this.path}/`, handlePolicies(["public"]), userCtrl.getAllUsers);
+    this.router.get(`${this.path}/`, handlePolicies(["user","admin","premium"]), userCtrl.getAllUsers);
     this.router.get(`${this.path}/:userId`, handlePolicies(["public"]), userCtrl.getUserById);
     this.router.post(`${this.path}/`, handlePolicies(["public"]), userCtrl.createUser);
     this.router.delete(`${this.path}/:userId`, handlePolicies(["public"]), userCtrl.deleteUser);

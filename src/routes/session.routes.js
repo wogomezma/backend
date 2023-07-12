@@ -33,6 +33,11 @@ class SessionRoutes {
               await findUser.logout();
             }
           }
+
+          
+    // Borrar el token del localStorage
+    localStorage.removeItem('token');
+
           req.session.destroy((err) => {
             if (!err) {
               return res.redirect("/api/v1/views/login");
@@ -76,6 +81,9 @@ class SessionRoutes {
               await findUser.login();
              /*  return res.json({ message: `welcome $${email},login success`, token }); */
 
+               // Guardar el token en el localStorage
+        localStorage.setItem('token', token);
+
              const { page = 1 , limit= 10} = req.query;
               const { docs, hasPrevPage, hasNextPage, nextPage, prevPage, length, totalPages } =
                 await productsModel.paginate({}, { limit: limit, page, lean: true });
@@ -105,6 +113,7 @@ class SessionRoutes {
               nextlink,
               buylink,
               linkcarts,
+              token,
             });
 
             } catch (error) {
@@ -155,7 +164,7 @@ class SessionRoutes {
           return res.json({ message: `jwt en las los headers siendo ADMIN` });
         });
 
-        this.router.get(`${this.path}/current/user`, handlePolicies(["user", "admin"]), async (req, res) => {
+        this.router.get(`${this.path}/current/user`, handlePolicies(["user", "admin", "premium"]), async (req, res) => {
             console.log(" VALIDANDO REQ", req.user);
             return res.json({ message: `jwt en las los headers con rol User` });
           }

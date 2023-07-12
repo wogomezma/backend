@@ -41,7 +41,7 @@ class ViewsRoutes {
     });
     
     
-    this.router.get(`${this.path}/profile`, handlePolicies(["public"]), async (req, res) => {
+    this.router.get(`${this.path}/profile`, handlePolicies(["user","admin","premium"]), async (req, res) => {
       const user = req.session.user;
       let imagenprofile = '';
 
@@ -72,7 +72,7 @@ class ViewsRoutes {
         
     });
 
-    this.router.get(`${this.path}/products`,  handlePolicies(["public"]), async (req, res) => {
+    this.router.get(`${this.path}/products`,  handlePolicies(["user","premium"]), async (req, res) => {
       const { page = 1 , limit= 10} = req.query;
       const { docs, hasPrevPage, hasNextPage, nextPage, prevPage, length, totalPages } =
         await productsModel.paginate({}, { limit: limit, page, lean: true });
@@ -99,7 +99,7 @@ class ViewsRoutes {
 
 
 
-    this.router.get(`${this.path}/products/:cid/:pid`, handlePolicies(["user", "admin"]), async (req, res) => {
+    this.router.get(`${this.path}/products/:cid/:pid`, handlePolicies(["user", "premium"]), async (req, res) => {
       try {
         const cartsBody = req.body;
          const {pid,cid} = req.params
@@ -147,7 +147,7 @@ class ViewsRoutes {
     });*/
   
 
-  this.router.get(`${this.path}/carts`, handlePolicies(["public"]), async (req, res) => {
+  this.router.get(`${this.path}/carts`, handlePolicies(["user","admin","premium"]), async (req, res) => {
     const { page = 1 , limit= 10} = req.query; // extrae el query param page y sino viene el valor por defecto es 1
     const { docs, hasPrevPage, hasNextPage, nextPage, prevPage, length, totalPages } =
       await cartsModel.paginate({}, { limit: limit, page, lean: true });
@@ -193,7 +193,7 @@ class ViewsRoutes {
 //   }
 // });
 
-this.router.get(`${this.path}/carts/:cartsId`, handlePolicies(["public"]), async (req, res) => {
+this.router.get(`${this.path}/carts/:cartsId`, handlePolicies(["user","premium"]), async (req, res) => {
   try {
     const { cartsId } = req.params;
     const cart = await cartsModel.findById(cartsId).populate('products.product').lean();
@@ -219,7 +219,7 @@ this.router.get(`${this.path}/carts/:cartsId`, handlePolicies(["public"]), async
     
     const totalCartValue = products.reduce((total, item) => total + item.totalValue, 0);
 
-    res.render("cartsid", { products, totalCartValue, cartsId }); // Renderizar la vista "cartsid" con los productos y el valor total del carrito
+    return res.render("cartsid", { products, totalCartValue, cartsId }); // Renderizar la vista "cartsid" con los productos y el valor total del carrito
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -269,22 +269,9 @@ this.router.get(`${this.path}/documents/:uid`, async (req, res) => {
   }
 });
 
-this.router.get(`${this.path}/useradmin`, handlePolicies(["public"]), async (req, res) => {
+this.router.get(`${this.path}/useradmin`, handlePolicies(["admin"]), async (req, res) => {
   try {
-    // Obtener todos los usuarios registrados
-    // const users = await userModel.find({});
-    
-    // const users = [
-    //   {
-    //     name: 'Walter5',
-    //     lastname: 'Gomez',
-    //     email: 'wgomez5@wgomez.com',
 
-    //     rol: 'admin',
-    //     last_connection: '2023-07-10T17:48:52.577Z',
-    //   },
-      // Resto de usuarios
-    //];
     const users = await userModel.find({}, 'name lastname email rol last_connection');
   
     const usersData = users.map(user => {

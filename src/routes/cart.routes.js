@@ -21,19 +21,19 @@ class CartsRoutes {
 
 
    
-    this.router.get(`${this.path}/`, handlePolicies(["public"]), cartCtrl.getAllCarts);
+    this.router.get(`${this.path}/`, handlePolicies(["admin"]), cartCtrl.getAllCarts);
 
-    this.router.get(`${this.path}/:cid`, handlePolicies(["public"]),  cartCtrl.getCartById);
+    this.router.get(`${this.path}/:cid`, handlePolicies(["user","premium"]),  cartCtrl.getCartById);
     
     this.router.post(`${this.path}/`, handlePolicies(["public"]), cartCtrl.createCart);
 
-    this.router.delete(`${this.path}/:cid`, handlePolicies(["public"]), cartCtrl.deleteCart);
+    this.router.delete(`${this.path}/:cid`, handlePolicies(["admin"]), cartCtrl.deleteCart);
 
-    this.router.delete(`${this.path}/`, handlePolicies(["public"]), cartCtrl.emptyCart);
+    this.router.delete(`${this.path}/`, handlePolicies(["user","premium"]), cartCtrl.emptyCart);
 
-    this.router.post(`${this.path}/:uid/:pid`, handlePolicies(["public"]), cartCtrl.updateCart);
+    this.router.post(`${this.path}/:uid/:pid`, handlePolicies(["user","premium"]), cartCtrl.updateCart);
 
-    this.router.post(`${this.path}/:cid/purchase`, handlePolicies(["public"]), cartCtrl.purchaseCart);
+    this.router.post(`${this.path}/:cid/purchase`, handlePolicies(["user","premium"]), cartCtrl.purchaseCart);
 
 
     
