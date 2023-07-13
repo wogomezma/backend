@@ -1,62 +1,150 @@
-{{!-- <H1>Lista de Carts</H1>
+<!-- cartsid.handlebars -->
 
-{{#each carts}}
-  <p>Title: {{this.title}}</p>
-  <p>Description: {{this.description}}</p>
-  <p>Category: {{this.category}}</p>
-{{/each}} --}}
-
-  <h1>Lista de Productos del Carrito</h1>
- 
- <style>
+<h1>Lista de Productos del Carritos {{this.cid}}</h1>
+<h2>{{this.cid}}</h2>
+<style>
   table {
     border-collapse: collapse;
   }
-  
+
   th, td {
     text-align: left;
     padding: 8px;
   }
-  
+
   th {
     background-color: #4CAF50;
     color: white;
   }
-  
+
   tr:nth-child(even) {
     background-color: #f2f2f2;
   }
-  
+
   td {
     border-bottom: 1px solid #ddd;
   }
 </style>
 
 <table>
-    <thead>
- <tr>
-  <th>Products</th>
-{{#each productsname }}
-
-
-    <th>{{this}}</th>
-
-{{/each}}
-  </tr>
+  <thead>
+    <tr>
+      <th>Producto</th>
+      <th>Cantidad</th>
+      <th>Precio por Producto</th>
+      <th>Valor Total</th>
+      <th>Acciones</th>
+    </tr>
   </thead>
- <tbody>
-   <tr>
-    <th>quantity</th>
-{{#each productsquantity }}
-
-
-    <td>{{this}}</td>
-
-{{/each}}
-  </tr>
-</tbody>
+  <tbody>
+    {{#each products}}
+      <tr>
+        <td>{{this.name}}</td>
+        <td>{{this.quantity}}</td>
+        <td>{{this.price}}</td>
+        <td>{{this.totalValue}}</td>
+        <td>
+          <form class="delete-product-form" data-product-id="{{this.pid}}">
+              <input type="hidden" name="cid" value="{{this.cid}}">
+              <input type="hidden" name="pid" value="{{this.pid}}">
+            <button type="submit" onclick="return confirm('¿Estás seguro de eliminar este producto {{this.pid}} del carrito {{this.cid}}?')">Eliminar</button>
+          </form>
+        </td>
+      </tr>
+    {{/each}}
+  </tbody>
+  <tfoot>
+    <tr>
+      <th>Total</th>
+      <td></td>
+      <td></td>
+      <td>{{totalCartValue}}</td>
+      <td></td>
+    </tr>
+  </tfoot>
 </table>
-<form action="/api/v1/session/logout" method="get">
-  <input type="submit" value="logout of "{{email}}>
+
+<form class="purchase-cart-form">
+  <input type="hidden" name="cid" value="{{this.cartsId}}">
+  <input type="hidden" name="amount" value="{{totalCartValue}}">
+  <button type="submit" onclick="return confirm('¿Estás seguro de que deseas comprar estos productos {{this.cartsId}} por un valor de {{totalCartValue}}?')">Realizar compra</button>
 </form>
 
+<form action="/api/v1/session/logout" method="get">
+  <input type="submit" value="Cerrar sesión de {{email}}">
+</form>
+
+<script>
+  // Obtén todos los formularios de "Eliminar producto"
+  const deleteProductForms = document.querySelectorAll('.delete-product-form');
+
+  // Escucha el evento de envío del formulario
+  deleteProductForms.forEach((form) => {
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault(); // Evita el comportamiento predeterminado de envío del formulario
+
+      try {
+        const response = await fetch(`/api/v1/carts/`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            cid: form.querySelector('input[name="cid"]').value,
+            pid: form.querySelector('input[name="pid"]').value,
+          }),
+        });
+
+        if (response.ok) {
+          // Producto eliminado correctamente del carrito
+          alert('Producto eliminado del carrito.');
+          location.reload(); // Recargar la página para actualizar el contenido del carrito
+        } else {
+          // Error al eliminar el producto del carrito
+          const errorData = await response.json();
+          alert(errorData.message);
+        }
+      } catch (error) {
+        // Error de red u otro error
+        console.error(error);
+        alert('Ocurrió un error al eliminar el producto del carrito. Inténtalo nuevamente más tarde.');
+      }
+    });
+  });
+
+  // Obtén el formulario de compra
+  const purchaseCartForm = document.querySelector('.purchase-cart-form');
+
+  // Escucha el evento de envío del formulario
+  purchaseCartForm.addEventListener('submit', async (event) => {
+    event.preventDefault(); // Evita el comportamiento predeterminado de envío del formulario
+
+    try {
+      const response = await fetch(`/api/v1/tickets/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          cid: purchaseCartForm.querySelector('input[name="cid"]').value,
+          amount: purchaseCartForm.querySelector('input[name="amount"]').value,
+        }),
+      });
+
+      if (response.ok) {
+        // Ticket creado correctamente
+        alert('Se ha creado un nuevo ticket de compra. Su pedido estara llegando en los proximos 3 dias habiles, recuerde que el pago es contra entrega');
+        window.location.href = '/api/v1/views/products';
+        //location.reload(); // Recargar la página para actualizar el contenido del carrito
+      } else {
+        // Error al crear el ticket
+        const errorData = await response.json();
+        alert(errorData.message);
+      }
+    } catch (error) {
+      // Error de red u otro error
+      console.error(error);
+      alert('Ocurrió un error al crear el ticket de compra. Inténtalo nuevamente más tarde.');
+    }
+  });
+</script>

@@ -20,9 +20,12 @@ const passport = require('passport');
 const initializePassport = require("./config/passport.config");
 const setLogger = require("./utils/logger");
 const useLogger = require("./utils/logger-basic");
-
+const swaggerUi = require("swagger-ui-express");
 
 const API_VERSION = "v1";
+
+
+
 
 class App {
   app;
@@ -68,6 +71,7 @@ class App {
     this.app.use("/static", express.static(`${__dirname}/public`));
     this.app.use(cookieParser());
     this.app.use(setLogger);
+    this.app.use(swaggerUi.serve);
     //this.app.use(useLogger);
     this.app.use(
       session({

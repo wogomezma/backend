@@ -1,0 +1,108 @@
+paths:
+  /api/v1/carts/:
+    get:
+      tags:
+        - Carts
+      summary: Obtener todos los carritos
+      responses:
+        200:
+          description: OK
+  /api/v1/carts/{cid}:
+      get:
+        tags:
+          - Carts
+        summary: Obtener un carrito por su ID
+        parameters:
+          - name: cid
+            in: path
+            description: ID del carrito a obtener
+            required: true
+            type: string
+        responses:
+          200:
+            description: OK
+      delete:
+        tags:
+          - Carts
+        summary: Eliminar un carrito por su ID
+        parameters:
+          - name: cid
+            in: path
+            description: ID del carrito a eliminar
+            required: true
+            type: string
+        responses:
+          200:
+            description: OK
+      put:
+        tags:
+          - Carts
+        summary: Actualizar un carrito por su ID
+        parameters:
+          - name: cid
+            in: path
+            description: ID del carrito a actualizar
+            required: true
+            type: string
+        responses:
+          200:
+            description: OK
+  /api/v1/carts/{cid}/purchase:
+      post:
+        tags:
+          - Carts
+        summary: Realizar una compra en un carrito por su ID
+        parameters:
+          - name: cid
+            in: path
+            description: ID del carrito
+            required: true
+            type: string
+        responses:
+          200:
+            description: OK
+  /api/v1/carts:
+    post:
+      tags:
+        - Carts
+      summary: Crear un nuevo carrito
+      responses:
+        200:
+          description: OK
+
+
+components:
+  schemas:
+    Cart:
+      type: object
+      properties:
+        title:
+          type: string
+          required: true
+        description:
+          type: string
+          required: true
+        category:
+          type: string
+          required: true
+        products:
+          type: array
+          items:
+            type: object
+            properties:
+              product:
+                type: string
+                required: true
+              quantity:
+                type: number
+                required: true
+              price:
+                type: number
+                required: true
+          default: []
+      required:
+        - title
+        - description
+        - category
+        - products
+

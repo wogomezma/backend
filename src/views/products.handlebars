@@ -1,54 +1,126 @@
-{{!-- <H1>Lista de Productos</H1>
+<h1>List Products</h1>
+<h2>{{messagesession}}</h2>
+
+
+<form id="carts-form">
+  <input type="hidden" name="token" value="{{token}}">
+  <button type="button" onclick="sendGetRequest()">Carts</button>
+</form>
 
 {{#each products}}
-  <p>Name: {{this.name}} </p>
-  <p>Description: {{this.description}}</p>
-  <p>Price: {{this.price}}</p>
-  <p>Code: {{this.code}}</p>
-  <p>Stock: {{this.stock}}</p>
-  <p>Thumbnail: {{this.thumbnail}}</p>
-  <p>Carts: {{this.carts}}</p>
-  <p>-------------------</p>
-{{/each}} --}}
-
-
-  <h1>List Products</h1>
-  <h2>{{messagesession}}</h2>
-  <h3>Join all Carts (only rol admin)</h3>
-  <form action="/api/v1/views/carts" method="get">
-  <input type="submit" value="carts">
-</form>
-  {{#each products}}
-  <p>Name: {{this.name}} </p>
+  <p>Name: {{this.name}}</p>
   <p>Description: {{this.description}}</p>
   <p>Price: {{this.price}}</p>
   <p>Code: {{this.code}}</p>
   <p>Stock: {{this.stock}}</p>
   <p>Thumbnail: {{this.thumbnail}}</p>
 
-  <form method="post" action="http://localhost:8080/api/v1/carts/6419fbc078eae46eb1fff5e5/products/{{this.id}}" >
-  <button type="submit">Agregar al Carrito</button>
+  <form class="add-to-cart-form" data-product-id="{{this.id}}">
+    <!-- Agrega un campo oculto para enviar el ID del usuario -->
+    <input type="hidden" name="uid" value="">
+    <button type="submit">Agrega a Carrito</button>
   </form>
+
   <p>-------------------</p>
-  {{/each}}
+{{/each}}
 
-  <div>
-    <p>Pagina actual {{page}}</p>
-    <p>Paginas totales {{totalPages}}</p>
-  </div>
-
-  {{#if hasPrevPage}}
-    <p>Pagina previa {{prevPage}}</p>
-    <a href="/api/v1/{{prevlink}}"><button
-      >Anterior</button></a>
-  {{/if}}
-
-  {{#if hasNextPage}}
-    <p>Pagina siguiente {{nextPage}}</p>
-    <a href="/api/v1/{{nextlink}}"><button
-      >Siguiente</button></a>
-  {{/if}}
+<div>
+  <p>Pagina actual {{page}}</p>
+  <p>Paginas totales {{totalPages}}</p>
 </div>
+
+{{#if hasPrevPage}}
+  <p>Pagina previa {{prevPage}}</p>
+  <a href="/api/v1/{{prevlink}}"><button>Anterior</button></a>
+{{/if}}
+
+{{#if hasNextPage}}
+  <p>Pagina siguiente {{nextPage}}</p>
+  <a href="/api/v1/{{nextlink}}"><button>Siguiente</button></a>
+{{/if}}
+
+<form id="profile-form" action="/api/v1/views/profile" method="get">
+  <button type="submit">Profile</button>
+</form>
+
 <form action="/api/v1/session/logout" method="get">
   <input type="submit" value="logout">
 </form>
+
+<script>
+  // Obtén todos los formularios de "Agregar al carrito"
+  const addToCartForms = document.querySelectorAll('.add-to-cart-form');
+
+  // Escucha el evento de envío del formulario
+  addToCartForms.forEach((form) => {
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault(); // Evita el comportamiento predeterminado de envío del formulario
+
+      const uid = '{{this.uid}}'; // Obtén el ID del usuario del contexto de Handlebars
+      const productId = form.getAttribute('data-product-id');
+      form.querySelector('input[name="uid"]').value = uid; // Actualiza el valor del campo oculto con el ID del usuario
+
+      try {
+        const token = '{{token}}'; // Obtiene el token de autorización
+        const response = await fetch(`/api/v1/carts/${uid}/${productId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}` // Agrega el token al encabezado Authorization
+          },
+        });
+
+        if (response.ok) {
+          // Producto agregado correctamente al carrito
+          alert('Producto agregado al carrito correctamente.');
+          // Aquí puedes realizar cualquier manipulación adicional que desees sin recargar la página
+        } else {
+          // Error al agregar el producto al carrito
+          const errorData = await response.json();
+          alert(errorData.message);
+        }
+      } catch (error) {
+        // Error de red u otro error
+        console.error(error);
+        alert('Ocurrió un error al agregar el producto al carrito. Inténtalo nuevamente más tarde.');
+      }
+    });
+  });
+
+  // Manejo del formulario de perfil
+  const profileForm = document.getElementById('profile-form');
+  profileForm.addEventListener('submit', () => {
+    const token = '{{token}}'; // Obtén el token de autorización
+    profileForm.setAttribute('action', `/api/v1/views/profile?token=${token}`); // Agrega el token como parámetro en la URL del formulario
+  });
+
+
+  function sendGetRequest() {
+    const token = localStorage.getItem('token'); // Obtiene el token de autorización del almacenamiento local
+    const cid = '{{this.cid}}'; // Obtén el valor de this.cid del contexto de Handlebars
+    const url = `/api/v1/views/carts/${cid}`;
+
+    const headers = new Headers();
+    headers.append('Authorization', `Bearer ${token}`);
+
+    const requestOptions = {
+      method: 'GET',
+      headers: headers
+    };
+
+
+    fetch(url, requestOptions)
+      .then(response => {
+        if (response.ok) {
+          window.location.href = url; // Redirige a la URL del carrito
+        } else {
+          // Error al realizar la solicitud GET al carrito
+        }
+      })
+      .catch(error => {
+        // Ocurrió un error de red u otro error, maneja el error aquí
+        console.error(error);
+      });
+  }
+
+</script>

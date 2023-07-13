@@ -1,0 +1,145 @@
+paths:
+  /api/v1/products/:
+    get:
+      tags:
+        - Products
+      summary: Obtener todos los productos
+      responses:
+        200:
+          description: OK
+  /api/v1/products/{productsId}:
+      get:
+        tags:
+          - Products
+        summary: Obtener un producto por su ID
+        parameters:
+          - name: productsId
+            in: path
+            description: ID del producto a obtener
+            required: true
+            type: string
+        responses:
+          200:
+            description: OK
+      delete:
+        tags:
+          - Products
+        summary: Eliminar un producto por su ID
+        parameters:
+          - name: productsId
+            in: path
+            description: ID del producto a eliminar
+            required: true
+            type: string
+        responses:
+          200:
+            description: OK
+      put:
+      tags:
+        - Products
+      summary: Actualizar un producto por su ID
+      parameters:
+        - name: productId
+          in: path
+          description: ID del producto a actualizar
+          required: true
+          type: string
+        - name: product
+          in: body
+          description: Objeto del producto a actualizar
+          required: true
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                required: true
+              description:
+                type: string
+                required: true
+              price:
+                type: number
+                required: true
+              code:
+                type: string
+                required: true
+              stock:
+                type: number
+                required: true
+              thumbnail:
+                type: string
+                required: true
+      responses:
+        200:
+          description: OK
+  /api/v1/products:
+    post:
+      tags:
+        - Products
+      summary: Crear un nuevo producto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  required: true
+                description:
+                  type: string
+                  required: true
+                price:
+                  type: number
+                  required: true
+                code:
+                  type: string
+                  required: true
+                stock:
+                  type: number
+                  required: true
+                thumbnail:
+                  type: string
+                  required: true
+                owner:
+                  type: string
+                  required: true
+                  description: ID del usuario que crea el producto
+      responses:
+        200:
+          description: OK
+
+
+
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        name:
+          type: string
+          required: true
+        description:
+          type: string
+          required: true
+        price:
+          type: number
+          required: true
+        code:
+          type: string
+          required: true
+        stock:
+          type: number
+          required: true
+        thumbnail:
+          type: string
+          required: true
+      required:
+        - name
+        - description
+        - price
+        - keycode
+        - stock
+        - thumbnail
+

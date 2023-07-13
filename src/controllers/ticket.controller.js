@@ -1,5 +1,10 @@
 const TicketManager = require("../services/tickets.service");
 const ticketModel = require('../models/ticket.model');
+const EmailService = require("../services/email.services");
+const { userModel, findUserByEmail } = require('../models/user.model');
+
+const emailService = new EmailService();
+
 
 class TicketCtrl {
     ticketManager;
@@ -32,23 +37,55 @@ class TicketCtrl {
 
   createTickets = async (req, res) => {
     try {
-        console.log("BODY en Controller ****", req.body);
-           
-        const newTicket = await this.ticketManager.createTickets(req);
-    
-        if (!newTicket) {
-          return res.status(500).json({ message: "User creation failed" });
-        }
-    
-        return res.status(201).json({
-          message: `Ticket created`,
-          user: newTicket,
-        });
-          
-      } catch (error) {
-        return res.status(500).json({ messagecreate: error.message });
+      console.log("BODY en Controller ****", req.body);
+
+      const { cid, amount } = req.body;
+  
+      const newTicket = await this.ticketManager.createTickets(req, res);
+  
+      if (!newTicket) {
+        return res.status(500).json({ message: "User creation failed" });
       }
+
+      const ownerUser = await userModel.findOne({ cart: cid });
+
+      
+      if (ownerUser) {
+        await emailService.sendEmail({
+          from: "pruebascoder@wgomez.com",
+          to: ownerUser.email,
+          subject: "Ticket de compra creado",
+          text: `Tu ticket de compra ha sido creado:
+
+          ID del ticket: ${newTicket._id}
+          Código: ${newTicket.code}
+          Fecha y hora de compra: ${newTicket.purchase_datetime}
+          Tu pedido estara llegando en los proximos 3 dias habiles apartir de hoy.
+
+          Detalles de la compra:
+          Costo total: ${newTicket.amount}
+          Recuerda que el pago sera contra entrega.
+
+          Productos:
+          ${newTicket.products.map((product, index) => `Producto ${index + 1}:
+            ${product.name}
+            Cantidad: ${product.quantity}
+            Precio unitario: ${product.price}
+          `).join('\n')}
+          `,
+        });
+      }
+
+  
+      return res.status(201).json({
+        message: `Ticket created`,
+        user: newTicket,
+      });
+    } catch (error) {
+      return res.status(500).json({ messagecreate: error.message });
+    }
   };
+  
 
   deleteTicket = async (req, res) => {
     try {

@@ -84,6 +84,12 @@ class EmailService {
       throw error;
     }
   }
+
+  sendEmail(emailOptions) {
+    return transporter.sendMail(emailOptions);
+  }
+
+
 }
 
 module.exports = EmailService;

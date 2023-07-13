@@ -1,17 +1,79 @@
-<div>
-  <h1>Perfil de usuario</h1>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Profile</title>
+  <script>
+    function showConfirmationMessage(message) {
+      alert(message);
+    }
 
-  <p>{{this.lastname}}</p>
-  <p>{{this.email}}</p>
+    function showErrorMessage(error) {
+      alert(`Error: ${error}`);
+    }
 
+    async function handleFormSubmission(event, form, message) {
+      event.preventDefault(); // Evitar el envío automático del formulario
+
+      try {
+        const formData = new FormData(form);
+        const response = await fetch(form.action, {
+          method: form.method,
+          body: formData,
+        });
+
+        if (response.ok) {
+          showConfirmationMessage(message);
+        } else {
+          showErrorMessage('Error al subir el documento.');
+        }
+      } catch (error) {
+        showErrorMessage(`Error: ${error.message}`);
+      }
+    }
+  </script>
+</head>
+<body>
+  <h1>Profile Page</h1>
+
+  <h2>Perfil de Usuario</h2>
   <div>
-    <form action="/api/session/logout" method="get">
-      <br />
-      <button type="submit">logout</button>
+    <h3>Nombre: {{this.name}}</h3>
+    <h3>Email: {{this.email}}</h3>
+    <h3>Rol: {{this.rol}}</h3>
+  </div>
+
+  <h2>Foto de Perfil</h2>
+  <div>
+    <h4>El archivo debe tener el nombre de identification y debe ser una imagen</h4>
+    <form action="/api/v1/users/{{this.id}}/documents" method="POST" enctype="multipart/form-data" onsubmit="handleFormSubmission(event, this, 'Foto subida correctamente.')">
+      <input type="hidden" name="type" value="profile">
+      <input type="file" name="documents" accept="image/jpeg">
+      <button type="submit">Subir Foto</button>
     </form>
   </div>
 
-</div>
+  <h2>Documentos de Contacto</h2>
+  <div>
+    <h4>El archivo debe tener el nombre de proofOfAddress y se aceptan documentos, PDF o Imagenes</h4>
+    <form action="/api/v1/users/{{this.id}}/documents" method="POST" enctype="multipart/form-data" onsubmit="handleFormSubmission(event, this, 'Documentos de contacto subidos correctamente.')">
+      <input type="hidden" name="type" value="profile">
+      <input type="file" name="documents" accept=".doc, .docx, .pdf, .txt">
+      <button type="submit">Subir Documentos</button>
+    </form>
+  </div>
+
+  <h2>Documentos Bancarios</h2>
+  <div>
+    <h4>El archivo debe tener el nombre de bankStatement y se aceptan documentos, PDF o Imagenes</h4>
+    <form action="/api/v1/users/{{this.id}}/documents" method="POST" enctype="multipart/form-data" onsubmit="handleFormSubmission(event, this, 'Documentos bancarios subidos correctamente.')">
+      <input type="hidden" name="type" value="profile">
+      <input type="file" name="documents" accept=".doc, .docx, .pdf, .txt">
+      <button type="submit">Subir Documentos</button>
+    </form>
+  </div>
+</body>
+</html>
+
 <form action="/api/v1/session/logout" method="get">
   <input type="submit" value="logout">
 </form>

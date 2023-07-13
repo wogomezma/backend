@@ -25,35 +25,60 @@ class CartsManager {
 
   getCartsById = async (id) => {
     try {
-      return await cartsModel.find({ _id: id }).populate('products.product');
+      return await cartsModel.findById(id).populate('products.product');
     } catch (error) {
       console.log(
         "🚀 ~ file: carts.manager.js:21 ~ CartsManager ~ getCartsById= ~ error:",
         error
       );
+      throw error; // Debes lanzar el error para que se maneje correctamente en el controlador.
     }
   };
+  
 
-  createCarts = async (req,res) => {
+  // createCarts = async (req,res) => {
+  //   try {
+  //     const newCarts = await cartsModel.create();
+  //     console.log("🚀 ~ file: carts.manager.js:46 ~ CartsManager ~ createCarts= ~ newCarts:", newCarts)
+  //     const {
+  //       user: { id },
+  //     } = req.user;
+    
+
+  //     const userData = await userModel.findById({ _id: id });
+  //     console.log("🚀 ~ file: carts.service.js:43 ~ CartsManager ~ createCarts= ~ userData:", userData)
+     
+
+  //     userData.carts.push({ cart: newCarts._id });
+  //     console.log("🚀 ~ file: carts.service.js:47 ~ CartsManager ~ createCarts= ~ userData:", userData)
+
+
+  //     const updatedCarts = await userModel.updateOne({ _id: id }, userData);
+  //     console.log("🚀 ~ file: carts.service.js:51 ~ CartsManager ~ createCarts= ~ updatedCarts:", updatedCarts)
+  //     return newCarts;
+  //   } catch (error) {
+  //     console.log(
+  //       "🚀 ~ file: carts.manager.js:45 ~ CartsManager ~ createCarts=async ~ error:",
+  //       error
+  //     );
+  //   }
+  // };
+
+  createCarts = async (req) => {
     try {
-      const newCarts = await cartsModel.create();
-      console.log("🚀 ~ file: carts.manager.js:46 ~ CartsManager ~ createCarts= ~ newCarts:", newCarts)
+      const newCart = await cartsModel.create();
+  
       const {
         user: { id },
       } = req.user;
-    
-
-      const userData = await userModel.findById({ _id: id });
-      console.log("🚀 ~ file: carts.service.js:43 ~ CartsManager ~ createCarts= ~ userData:", userData)
-     
-
-      userData.carts.push({ cart: newCarts._id });
-      console.log("🚀 ~ file: carts.service.js:47 ~ CartsManager ~ createCarts= ~ userData:", userData)
-
-
-      const updatedCarts = await userModel.updateOne({ _id: id }, userData);
-      console.log("🚀 ~ file: carts.service.js:51 ~ CartsManager ~ createCarts= ~ updatedCarts:", updatedCarts)
-      return newCarts;
+  
+      const userData = await userModel.findById(id);
+  
+      userData.cart = newCart._id;
+  
+      await userData.save();
+  
+      return newCart;
     } catch (error) {
       console.log(
         "🚀 ~ file: carts.manager.js:45 ~ CartsManager ~ createCarts=async ~ error:",
@@ -61,13 +86,12 @@ class CartsManager {
       );
     }
   };
-
-
+  
 
   updateCart = async (req) => {
     try {
-      const { cid } = req.params;
-      const { pid, quantity } = req.query;
+      const { cid, pid } = req.params;
+      const quantity = 1
   
       // Buscar el carrito por ID
       const cart = await cartsModel.findById(cid);

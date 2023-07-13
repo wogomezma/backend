@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Documents</title>
+</head>
+<body>
+    <img src="/uploads/documents/643d5dc6eca2dd0f0b49521b-document.png" alt="Document Image">
+  <h1>Document Image</h1>
+  {{#with document}}
+    <div>
+      <p>ID: {{id}}</p>
+      <p>Name: {{name}}</p>
+      <img src="{{reference}}" alt="Document Image">
+    </div>
+  {{/with}}
+</body>
+</html>

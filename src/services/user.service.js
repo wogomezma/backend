@@ -11,8 +11,8 @@ class UserManager {
 
   getAllUsers = async (req, res) => {
     try {
-      const users = await userModel.find({});
-      console.log("🚀 ~ file: user.service.js:9 ~ UserManager ~ getAllUsers= ~ users:", users)
+      const users = await userModel.find({}, "name lastname email rol last_connection");
+
       return users;
     } catch (error) {
       return res.status(500).json({ message: error.message });
@@ -38,11 +38,11 @@ class UserManager {
         const { name, lastname, email, password, rol="user" } = req.body;
         const pswHashed = await createHashValue(password);
         console.log("🚀 ~ file: user.service.js:31 ~ UserManager ~ createUser= ~ pswHashed:", pswHashed)
-        var titlecart = 'Carts of' + email
-        var descriptioncart = 'Carts of' + name;
+        var titlecart = 'Carts of ' + email
+        var descriptioncart = 'Carts of ' + name;
         const newCartsdata = { title: titlecart, description: descriptioncart, category: "CartsUser"};
         const newCarts = await cartsModel.create(newCartsdata);
-        const userAdd = { name, lastname, email, password: pswHashed, rol, carts: newCarts._id };
+        const userAdd = { name, lastname, email, password: pswHashed, rol, cart: newCarts._id };
         console.log("🚀 ~ file: user.service.js:42 ~ UserManager ~ createUser= ~ newCarts:", newCarts)
         const newUser = await userModel.create(userAdd);
         console.log("🚀 ~ file: user.service.js:35 ~ UserManager ~ createUser= ~ newUser:", newUser)
@@ -95,9 +95,9 @@ class UserManager {
       // Cambiar el rol del usuario
       if (user.rol === "premium") {
         
-        user.rol = "admin";
+        user.rol = "user";
         console.log("🚀 ~ file: user.service.js:101 ~ UserCtrl ~ changeToPremium= ~ user.role:", user.rol);
-      } else if (user.rol === "admin") {
+      } else if (user.rol === "user") {
         user.rol = "premium";
         console.log("🚀 ~ file: user.service.js:104 ~ UserCtrl ~ changeToPremium= ~ user.role:", user.rol);
       }
@@ -152,7 +152,64 @@ class UserManager {
   };
 
 
+
+  
+
+  uploadDocuments = async (req, res) => {
+    try {
+      const userId = req.params.uid;
+      const user = await userModel.findById(userId);
+
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Configuración de Multer para guardar los archivos subidos
+      const storage = multer.diskStorage({
+        destination: (req, file, cb) => {
+          cb(null, "uploads/");
+        },
+        filename: (req, file, cb) => {
+          cb(null, `${userId}-${file.originalname}`);
+        },
+      });
+
+      const upload = multer({ storage }).array("documents", 5); // Se permite subir hasta 5 documentos
+
+      upload(req, res, async (err) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).json({ message: "Error uploading files" });
+        }
+
+        const files = req.files;
+        const uploadedDocuments = [];
+
+        // Guardar los nombres de los archivos en el usuario y marcarlos como subidos
+        files.forEach((file) => {
+          const document = {
+            name: file.originalname,
+            reference: file.filename,
+            status: "uploaded",
+          };
+          user.documents.push(document);
+          uploadedDocuments.push(document);
+        });
+
+        await user.save();
+
+        return res.status(200).json({
+          message: "Documents uploaded successfully",
+          documents: uploadedDocuments,
+        });
+      });
+    } catch (error) {
+      console.log("Error:", error);
+      return res.status(500).json({ message: error.message });
+    }
+  };
 }
+
 
 
   

@@ -21,11 +21,11 @@ class ticketsRoutes {
 
   initTicketsRoutes() {
 
-    this.router.get(`${this.path}/`, handlePolicies(["public"]), ticketCtrl.getAllTickets);
+    this.router.get(`${this.path}/`, handlePolicies(["admin"]), ticketCtrl.getAllTickets);
 
-    this.router.get(`${this.path}/:ticketId`, handlePolicies(["user"]), ticketCtrl.getTicketById);
+    this.router.get(`${this.path}/:ticketId`, handlePolicies(["admin"]), ticketCtrl.getTicketById);
 
-    this.router.post(`${this.path}/`, handlePolicies(["user"]), ticketCtrl.createTickets);
+    this.router.post(`${this.path}/`, handlePolicies(["user","premium"]), ticketCtrl.createTickets);
 
     this.router.delete(`${this.path}/:ticketId`, handlePolicies(["admin"]), ticketCtrl.deleteTicket);
 
