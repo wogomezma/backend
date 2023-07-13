@@ -48,10 +48,11 @@ class EmailController {
   }
 
   async resetPassword(req, res) {
-    const { token, new_password } = req.body;
-    console.log("🚀 ~ file: email.controller.js:52 ~ EmailController ~ resetPassword ~ req.body:", req.body)
-    console.log("🚀 ~ file: email.controller.js:52 ~ EmailController ~ resetPassword ~ newPassword:", new_password)
-    console.log("🚀 ~ file: email.controller.js:52 ~ EmailController ~ resetPassword ~ token:", token)
+    const { token, new_password, confirmPassword } = req.body;
+    console.log("🚀 ~ file: email.controller.js:52 ~ EmailController ~ resetPassword ~ confirmPassword:", confirmPassword)
+    console.log("🚀 ~ file: email.controller.js:53 ~ EmailController ~ resetPassword ~ req.body:", req.body)
+    console.log("🚀 ~ file: email.controller.js:54 ~ EmailController ~ resetPassword ~ newPassword:", new_password)
+    console.log("🚀 ~ file: email.controller.js:55 ~ EmailController ~ resetPassword ~ token:", token)
 
     try {
       // Verificar y decodificar el token JWT

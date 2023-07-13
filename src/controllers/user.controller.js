@@ -182,12 +182,17 @@ class UserCtrl {
     try {
       const userId = req.params.userId;
   
+
       // Verificar si el usuario ha cargado los documentos requeridos
       const user = await this.userManager.getUserById(req, res);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
   
+      if (user.rol === 'admin') {
+        return res.status(403).json({ message: 'El cambio de rol solo es posible de user a premium' });
+      }
+
       const requiredDocuments = ["identification", "proofOfAddress", "bankStatement"];
   
       for (const documentName of requiredDocuments) {
@@ -200,7 +205,7 @@ class UserCtrl {
         
         if (!document) {
           return res.status(400).json({
-            message: `User has not uploaded the required document: ${documentName}`,
+            message: `El usuario no ha subido el documento requerido: ${documentName}`,
           });
         }
       }
