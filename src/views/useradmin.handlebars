@@ -26,6 +26,31 @@
         alert('Error al cambiar el rol del usuario');
       }
     }
+
+   function confirmDelete(email, uid) {
+      if (confirm(`¿Deseas eliminar al usuario ${email}?`)) {
+        deleteUser(email, uid);
+      }
+    }
+
+    async function deleteUser(email, uid) {
+      try {
+        const response = await fetch(`/api/v1/users/${uid}`, {
+          method: 'DELETE'
+        });
+
+        if (response.ok) {
+          alert(`Se eliminó al usuario ${email}`);
+          location.reload(); // Recargar la página después de eliminar al usuario
+        } else {
+          const errorData = await response.json();
+          alert(`Error al eliminar al usuario: ${errorData.message}`);
+        }
+      } catch (error) {
+        alert('Error al eliminar al usuario');
+      }
+    }
+
   </script>
 </head>
 <body>
