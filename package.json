@@ -3,9 +3,7 @@
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
-    "start:dev": "node /src/index",
-    "start:prod": "cross-env NODE_ENV=production nodemon ./src/index",
-    "start:qa": "cross-env NODE_ENV=qa nodemon ./src/index",
+    "start": "node ./src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
