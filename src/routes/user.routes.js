@@ -19,13 +19,13 @@ class usersRoutes {
 
   initusersRoutes() {
     this.router.get(`${this.path}/`, handlePolicies(["user","admin","premium"]), userCtrl.getAllUsers);
-    this.router.get(`${this.path}/:userId`, handlePolicies(["public"]), userCtrl.getUserById);
+    this.router.get(`${this.path}/:userId`, handlePolicies(["user","admin","premium"]), userCtrl.getUserById);
     this.router.post(`${this.path}/`, handlePolicies(["public"]), userCtrl.createUser);
-    this.router.delete(`${this.path}/:userId`, handlePolicies(["public"]), userCtrl.deleteUser);
-    this.router.put(`${this.path}/:userId`, handlePolicies(["public"]), userCtrl.updateUser);
-    this.router.post(`${this.path}/premium/:userId`, handlePolicies(["public"]), userCtrl.changeToPremium);
-    this.router.post(`${this.path}/:uid/documents`, handlePolicies(["public"]), userCtrl.uploadDocuments);
-    this.router.delete(`${this.path}/`, handlePolicies(["public"]), userCtrl.deleteInactiveUsers);
+    this.router.delete(`${this.path}/:userId`, handlePolicies(["admin"]), userCtrl.deleteUser);
+    this.router.put(`${this.path}/:userId`, handlePolicies(["user","admin","premium"]), userCtrl.updateUser);
+    this.router.post(`${this.path}/premium/:userId`, handlePolicies(["admin"]), userCtrl.changeToPremium);
+    this.router.post(`${this.path}/:uid/documents`, handlePolicies(["user","admin","premium"]), userCtrl.uploadDocuments);
+    this.router.delete(`${this.path}/`, handlePolicies(["admin"]), userCtrl.deleteInactiveUsers);
   }
 }
 
