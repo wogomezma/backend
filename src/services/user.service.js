@@ -11,7 +11,7 @@ class UserManager {
 
   getAllUsers = async (req, res) => {
     try {
-      const users = await userModel.find({});
+      const users = await userModel.find({}, "name lastname email rol last_connection");
 
       return users;
     } catch (error) {
